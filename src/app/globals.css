@@ -1,38 +1,37 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 40 43% 97.5%;
-    --foreground: 20 10% 15%;
-    --card: 40 43% 98.5%;
-    --card-foreground: 20 10% 15%;
+    --background: 40 30% 98%;
+    --foreground: 24 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 24 10% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 10% 15%;
-    --primary: 36 68% 56%;
-    --primary-foreground: 40 43% 98%;
-    --secondary: 40 30% 92%;
-    --secondary-foreground: 36 68% 30%;
-    --muted: 40 20% 90%;
-    --muted-foreground: 20 10% 45%;
-    --accent: 11 79% 66%;
+    --popover-foreground: 24 10% 15%;
+    --primary: 28 95% 53%;
+    --primary-foreground: 40 30% 98%;
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 28 95% 20%;
+    --muted: 40 15% 90%;
+    --muted-foreground: 24 10% 45%;
+    --accent: 345 75% 45%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 36 30% 88%;
-    --input: 36 30% 88%;
-    --ring: 36 68% 56%;
-    --radius: 0.75rem;
-    --sidebar-background: 40 30% 96%;
-    --sidebar-foreground: 20 10% 25%;
-    --sidebar-primary: 36 68% 56%;
+    --border: 28 20% 90%;
+    --input: 28 20% 90%;
+    --ring: 28 95% 53%;
+    --radius: 1rem;
+    --sidebar-background: 40 20% 97%;
+    --sidebar-foreground: 24 10% 25%;
+    --sidebar-primary: 28 95% 53%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 36 68% 90%;
-    --sidebar-accent-foreground: 36 68% 30%;
-    --sidebar-border: 36 30% 88%;
-    --sidebar-ring: 36 68% 56%;
+    --sidebar-accent: 28 95% 94%;
+    --sidebar-accent-foreground: 28 95% 25%;
+    --sidebar-border: 28 20% 90%;
+    --sidebar-ring: 28 95% 53%;
   }
 }
 
@@ -41,6 +40,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground selection:bg-primary/20;
   }
+}
+
+.bg-pattern {
+  background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
 }
