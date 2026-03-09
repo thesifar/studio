@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Music, PlayCircle, Search, Home, LogIn, Menu, Sparkles } from "lucide-react";
+import { Music, Search, Home, LogIn, Menu, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
@@ -13,7 +13,7 @@ export function Navigation() {
   
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -26,31 +26,34 @@ export function Navigation() {
 
   return (
     <header className={cn(
-      "sticky top-0 z-50 w-full transition-all duration-300",
-      isScrolled 
-        ? "h-16 bg-white/80 backdrop-blur-xl border-b shadow-sm" 
-        : "h-20 bg-transparent"
+      "fixed top-0 z-50 w-full transition-all duration-500 px-4 pt-4",
+      isScrolled ? "h-20" : "h-24"
     )}>
-      <div className="container mx-auto flex h-full items-center justify-between px-4">
-        <div className="flex items-center gap-8 lg:gap-12">
+      <div className={cn(
+        "container mx-auto h-full flex items-center justify-between px-6 rounded-3xl transition-all duration-500",
+        isScrolled 
+          ? "glass-effect shadow-lg shadow-black/5" 
+          : "bg-transparent border-transparent"
+      )}>
+        <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="bg-primary p-2.5 rounded-2xl shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
+            <div className="bg-primary p-2.5 rounded-2xl shadow-lg shadow-primary/30 group-hover:rotate-6 transition-transform">
               <Music className="h-6 w-6 text-primary-foreground" />
             </div>
             <span className={cn(
               "font-headline font-bold text-2xl tracking-tight transition-colors",
-              isScrolled ? "text-primary" : "text-white drop-shadow-sm"
+              isScrolled ? "text-foreground" : "text-white"
             )}>
               Bhajan Sangam
             </span>
           </Link>
-          <nav className="hidden md:flex gap-8">
+          <nav className="hidden md:flex gap-10">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative py-2 text-sm font-bold tracking-wide transition-all group",
+                  "relative py-2 text-sm font-bold tracking-wide transition-all group flex items-center gap-2",
                   pathname === item.href 
                     ? (isScrolled ? "text-primary" : "text-white") 
                     : (isScrolled ? "text-muted-foreground hover:text-primary" : "text-white/70 hover:text-white")
@@ -70,27 +73,27 @@ export function Navigation() {
           <div className="hidden lg:flex items-center relative group">
              <Search className={cn(
                "absolute left-3.5 h-4 w-4 transition-colors",
-               isScrolled ? "text-muted-foreground group-focus-within:text-primary" : "text-white/60 group-focus-within:text-white"
+               isScrolled ? "text-muted-foreground" : "text-white/60"
              )} />
              <input
                type="search"
-               placeholder="Search spiritual content..."
+               placeholder="Search..."
                className={cn(
-                 "h-11 w-64 rounded-2xl border bg-transparent pl-11 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50",
+                 "h-11 w-48 rounded-2xl border bg-transparent pl-11 pr-4 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50",
                  isScrolled 
-                   ? "border-input bg-white focus:bg-white focus:w-80 shadow-sm" 
-                   : "border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:bg-white/20 focus:w-80 backdrop-blur-sm"
+                   ? "border-input bg-secondary/50 focus:bg-white focus:w-64" 
+                   : "border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:bg-white/20 focus:w-64 backdrop-blur-sm"
                )}
              />
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
               size="sm" 
               asChild
               className={cn(
-                "hidden sm:flex items-center gap-2 rounded-xl font-bold transition-all",
+                "hidden sm:flex items-center gap-2 rounded-2xl font-bold transition-all h-11 px-5",
                 isScrolled 
                   ? "text-muted-foreground hover:text-primary hover:bg-primary/5" 
                   : "text-white hover:bg-white/10"
@@ -104,9 +107,9 @@ export function Navigation() {
             
             <Button 
               className={cn(
-                "rounded-xl font-bold px-6 shadow-md transition-all",
+                "rounded-2xl font-bold px-8 h-11 shadow-lg transition-all",
                 isScrolled 
-                  ? "bg-primary text-primary-foreground hover:shadow-primary/20" 
+                  ? "bg-primary text-primary-foreground hover:shadow-primary/30" 
                   : "bg-white text-primary hover:bg-white/90"
               )}
             >
@@ -114,7 +117,7 @@ export function Navigation() {
             </Button>
             
             <Button variant="ghost" size="icon" className={cn(
-              "md:hidden rounded-xl",
+              "md:hidden rounded-2xl",
               isScrolled ? "text-foreground" : "text-white"
             )}>
               <Menu className="h-6 w-6" />
