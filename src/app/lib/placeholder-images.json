@@ -1,0 +1,53 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "krishna-bhajan",
+      "description": "Statue of Lord Krishna with flute",
+      "imageUrl": "https://picsum.photos/seed/krishna/800/450",
+      "imageHint": "krishna statue"
+    },
+    {
+      "id": "shiva-meditation",
+      "description": "Peaceful Shiva meditation scene",
+      "imageUrl": "https://picsum.photos/seed/shiva/800/450",
+      "imageHint": "shiva meditation"
+    },
+    {
+      "id": "devi-bhakti",
+      "description": "Devotional image of goddess Durga",
+      "imageUrl": "https://picsum.photos/seed/devi/800/450",
+      "imageHint": "durga goddess"
+    },
+    {
+      "id": "ganesha-mantra",
+      "description": "Vibrant Ganesha portrait",
+      "imageUrl": "https://picsum.photos/seed/ganesha/800/450",
+      "imageHint": "ganesha idol"
+    },
+    {
+      "id": "temple-sunset",
+      "description": "Ancient temple at sunset",
+      "imageUrl": "https://picsum.photos/seed/temple/1200/600",
+      "imageHint": "indian temple"
+    },
+    {
+      "id": "traditional-instruments",
+      "description": "Tabla and Harmonium set",
+      "imageUrl": "https://picsum.photos/seed/instruments/600/400",
+      "imageHint": "tabla harmonium"
+    },
+    {
+      "id": "artist-female",
+      "description": "Spiritual female singer",
+      "imageUrl": "https://picsum.photos/seed/singer1/400/400",
+      "imageHint": "spiritual singer"
+    },
+    {
+      "id": "artist-male",
+      "description": "Spiritual male singer",
+      "imageUrl": "https://picsum.photos/seed/singer2/400/400",
+      "imageHint": "spiritual man"
+    }
+  ]
+}
