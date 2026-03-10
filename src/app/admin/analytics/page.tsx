@@ -3,8 +3,8 @@
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer, Tooltip, Line, LineChart, Pie, PieChart, Cell } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Line, LineChart, Pie, PieChart, Cell } from "recharts";
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Music, Users, TrendingUp, PlayCircle, Calendar } from "lucide-react";
 
 const playTrendData = [
@@ -24,7 +24,31 @@ const categoryData = [
   { name: "Hanuman Chalisa", value: 278 },
 ];
 
+const peakHoursData = [
+  { hour: "4am", users: 120 },
+  { hour: "6am", users: 450 },
+  { hour: "8am", users: 300 },
+  { hour: "12pm", users: 200 },
+  { hour: "6pm", users: 580 },
+  { hour: "8pm", users: 720 },
+  { hour: "10pm", users: 310 },
+];
+
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--primary)/0.6)', 'hsl(var(--accent)/0.6)'];
+
+const chartConfig = {
+  count: {
+    label: "Streams",
+    color: "hsl(var(--primary))",
+  },
+  users: {
+    label: "Active Users",
+    color: "hsl(var(--accent))",
+  },
+  value: {
+    label: "Popularity",
+  }
+} satisfies ChartConfig;
 
 export default function AdminAnalyticsPage() {
   return (
@@ -99,7 +123,7 @@ export default function AdminAnalyticsPage() {
                 <CardDescription>Number of bhajans played per day</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ChartContainer config={chartConfig} className="h-full w-full">
                   <BarChart data={playTrendData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis 
@@ -119,7 +143,7 @@ export default function AdminAnalyticsPage() {
                       barSize={40}
                     />
                   </BarChart>
-                </ResponsiveContainer>
+                </ChartContainer>
               </CardContent>
             </Card>
 
@@ -130,7 +154,7 @@ export default function AdminAnalyticsPage() {
                 <CardDescription>Popularity by bhajan category</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
+                <ChartContainer config={chartConfig} className="h-full w-full">
                   <PieChart>
                     <Pie
                       data={categoryData}
@@ -147,7 +171,7 @@ export default function AdminAnalyticsPage() {
                     </Pie>
                     <Tooltip content={<ChartTooltipContent />} />
                   </PieChart>
-                </ResponsiveContainer>
+                </ChartContainer>
                 <div className="flex flex-col gap-2 ml-4">
                    {categoryData.map((item, i) => (
                      <div key={item.name} className="flex items-center gap-2">
@@ -167,16 +191,8 @@ export default function AdminAnalyticsPage() {
               <CardDescription>Active users throughout the day (Average)</CardDescription>
             </CardHeader>
             <CardContent className="h-[300px]">
-               <ResponsiveContainer width="100%" height="100%">
-                 <LineChart data={[
-                   { hour: "4am", users: 120 },
-                   { hour: "6am", users: 450 },
-                   { hour: "8am", users: 300 },
-                   { hour: "12pm", users: 200 },
-                   { hour: "6pm", users: 580 },
-                   { hour: "8pm", users: 720 },
-                   { hour: "10pm", users: 310 },
-                 ]}>
+               <ChartContainer config={chartConfig} className="h-full w-full">
+                 <LineChart data={peakHoursData}>
                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                    <XAxis dataKey="hour" axisLine={false} tickLine={false} />
                    <Tooltip content={<ChartTooltipContent />} />
@@ -189,7 +205,7 @@ export default function AdminAnalyticsPage() {
                      activeDot={{ r: 6 }}
                    />
                  </LineChart>
-               </ResponsiveContainer>
+               </ChartContainer>
             </CardContent>
           </Card>
         </main>
