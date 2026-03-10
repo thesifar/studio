@@ -48,7 +48,7 @@ export default function Home() {
                   Start Listening <Play className="h-5 w-5 fill-current" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 font-bold px-10 h-16 rounded-full text-lg" asChild>
+              <Button size="lg" className="bg-accent hover:bg-accent/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-accent/40 text-lg" asChild>
                 <Link href="/bhajans?type=video">Watch Collection</Link>
               </Button>
             </div>
