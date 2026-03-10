@@ -13,11 +13,11 @@ export function PlaylistQueue() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="relative gap-2 rounded-full border-primary/20 bg-background/50 hover:bg-primary/10 text-primary">
+        <Button className="relative gap-2 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 border-none h-10 px-5">
           <ListMusic className="h-5 w-5" />
           <span className="hidden md:inline">Queue</span>
           {queue.length > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-white font-bold">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] text-primary font-black shadow-sm border border-primary/10">
               {queue.length}
             </span>
           )}
