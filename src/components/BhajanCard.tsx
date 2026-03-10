@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -16,6 +17,9 @@ interface BhajanCardProps {
 
 export function BhajanCard({ bhajan }: BhajanCardProps) {
   const { addToQueue } = usePlaylist();
+  
+  // Robust fallback for empty thumbnails to prevent Next.js Image error
+  const thumbnailUrl = bhajan.thumbnail || "https://picsum.photos/seed/fallback/800/450";
 
   const handleAddToQueue = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -31,7 +35,7 @@ export function BhajanCard({ bhajan }: BhajanCardProps) {
     <Card className="group overflow-hidden border-none bg-white/40 backdrop-blur-sm shadow-sm hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 rounded-3xl">
       <div className="relative aspect-video overflow-hidden">
         <Image
-          src={bhajan.thumbnail}
+          src={thumbnailUrl}
           alt={bhajan.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -39,7 +43,7 @@ export function BhajanCard({ bhajan }: BhajanCardProps) {
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
         
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-           <Button size="icon" variant="primary" className="h-14 w-14 rounded-full bg-primary/90 hover:bg-primary shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300" asChild>
+           <Button size="icon" className="h-14 w-14 rounded-full bg-primary/90 hover:bg-primary shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300" asChild>
              <Link href={`/bhajans/${bhajan.id}`}>
                <Play className="h-6 w-6 fill-white text-white" />
              </Link>

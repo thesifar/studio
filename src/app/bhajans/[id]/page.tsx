@@ -30,6 +30,8 @@ export default function BhajanDetailPage() {
     );
   }
 
+  const thumbnailUrl = bhajan.thumbnail || "https://picsum.photos/seed/fallback/800/450";
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
@@ -52,13 +54,13 @@ export default function BhajanDetailPage() {
                 <video 
                   src={bhajan.url} 
                   controls 
-                  poster={bhajan.thumbnail}
+                  poster={thumbnailUrl}
                   className="w-full h-full"
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 to-primary/5">
                    <div className="relative w-48 h-48 mb-6 rounded-full overflow-hidden shadow-xl ring-4 ring-primary/30">
-                     <Image src={bhajan.thumbnail} alt={bhajan.title} fill className="object-cover" />
+                     <Image src={thumbnailUrl} alt={bhajan.title} fill className="object-cover" />
                      <div className="absolute inset-0 bg-primary/20 animate-pulse" />
                    </div>
                    <audio src={bhajan.url} controls className="w-4/5 max-w-lg mb-4" />
