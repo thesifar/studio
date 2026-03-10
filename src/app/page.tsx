@@ -5,11 +5,10 @@ import { Navigation } from "@/components/Navigation";
 import { BhajanCard } from "@/components/BhajanCard";
 import { BHAJANS, CATEGORIES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Play, Heart, Star, Music, UserCircle } from "lucide-react";
+import { ArrowRight, Sparkles, Play, Heart, Music } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const featuredBhajans = BHAJANS.slice(0, 4);
@@ -35,14 +34,6 @@ export default function Home() {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="container relative z-10 px-4 text-center">
-            {/* Refined Divine Sanctuary Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white/90 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 shadow-2xl">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.35em] pl-1">
-                Divine Sanctuary
-              </span>
-            </div>
-            
             <h1 className="font-headline text-5xl md:text-8xl font-bold text-white mb-8 tracking-tight leading-none animate-in fade-in zoom-in-95 duration-1000">
               Experience the <span className="text-primary italic">Divine</span>
             </h1>
@@ -154,7 +145,7 @@ export default function Home() {
                 </div>
                 <span className="font-headline font-bold text-2xl tracking-tight text-primary">Bhajan Sangam</span>
               </div>
-              <p className="text-muted-foreground text-lg max-w-sm mb-8 italic">
+              <p className="text-muted-foreground text-lg max-sm mb-8 italic">
                 Preserving eternal culture through spiritual music.
               </p>
             </div>
