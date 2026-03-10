@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Music, Search, Home, LogIn, Menu, Sparkles, UserCircle } from "lucide-react";
+import { Music, Search, Home, Menu, Sparkles, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
@@ -44,20 +44,23 @@ export function Navigation() {
             </span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "text-sm font-bold tracking-wide transition-colors hover:text-primary",
-                  pathname === item.href 
-                    ? (isScrolled ? "text-primary" : (pathname === '/' ? "text-white" : "text-primary"))
-                    : (isScrolled ? "text-muted-foreground" : (pathname === '/' ? "text-white/70" : "text-muted-foreground"))
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "text-sm font-bold tracking-wide transition-colors hover:text-primary",
+                    isScrolled 
+                      ? (isActive ? "text-primary" : "text-muted-foreground")
+                      : (pathname === '/' ? "text-white" : (isActive ? "text-primary" : "text-muted-foreground"))
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         
