@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -74,10 +73,10 @@ export default function SubmitBhajanPage() {
     return (
       <div className="min-h-screen bg-spiritual-gradient flex flex-col">
         <Navigation />
-        <main className="flex-1 flex items-center justify-center p-4">
+        <main className="flex-1 flex items-center justify-center p-4" role="main">
           <Card className="max-w-md w-full text-center p-8 border-none shadow-2xl rounded-[2rem] bg-white/80 backdrop-blur-md">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="h-10 w-10 text-primary" />
+              <CheckCircle2 className="h-10 w-10 text-primary" aria-hidden="true" />
             </div>
             <h2 className="font-headline text-3xl font-bold text-primary mb-4">Auspicious Submission!</h2>
             <p className="text-muted-foreground mb-8">
@@ -100,19 +99,19 @@ export default function SubmitBhajanPage() {
   return (
     <div className="min-h-screen bg-spiritual-gradient flex flex-col">
       <Navigation />
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-32">
+      <main className="flex-1 container max-w-2xl mx-auto px-4 py-32" role="main">
         <div className="text-center mb-10">
           <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary mb-4">
-            <Heart className="h-6 w-6" />
+            <Heart className="h-6 w-6" aria-hidden="true" />
           </div>
           <h1 className="font-headline text-4xl font-bold text-primary mb-2">Contribute a Bhajan</h1>
           <p className="text-muted-foreground">Share divine melodies with the community. Your contribution preserves our eternal culture.</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} aria-labelledby="form-heading">
           <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
             <CardHeader className="bg-primary/5 border-b border-primary/10">
-              <CardTitle className="font-headline text-xl">Bhajan Details</CardTitle>
+              <CardTitle id="form-heading" className="font-headline text-xl">Bhajan Details</CardTitle>
               <CardDescription>Fill in the metadata for your devotional content</CardDescription>
             </CardHeader>
             <CardContent className="p-8 space-y-6">
@@ -125,6 +124,7 @@ export default function SubmitBhajanPage() {
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     required
+                    aria-required="true"
                   />
                 </div>
                 <div className="space-y-2">
@@ -135,15 +135,16 @@ export default function SubmitBhajanPage() {
                     value={formData.artist}
                     onChange={(e) => handleInputChange("artist", e.target.value)}
                     required
+                    aria-required="true"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>Category</Label>
+                  <Label htmlFor="category-select">Category</Label>
                   <Select value={formData.category} onValueChange={(val) => handleInputChange("category", val)}>
-                    <SelectTrigger>
+                    <SelectTrigger id="category-select" aria-label="Select devotional path">
                       <SelectValue placeholder="Select path" />
                     </SelectTrigger>
                     <SelectContent>
@@ -152,9 +153,9 @@ export default function SubmitBhajanPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Language</Label>
+                  <Label htmlFor="language-select">Language</Label>
                   <Select value={formData.language} onValueChange={(val) => handleInputChange("language", val)}>
-                    <SelectTrigger>
+                    <SelectTrigger id="language-select" aria-label="Select bhajan language">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -165,23 +166,29 @@ export default function SubmitBhajanPage() {
               </div>
 
               <div className="space-y-4">
-                <Label>Format Type</Label>
-                <div className="flex gap-4">
+                <Label asChild>
+                  <span className="text-sm font-medium">Format Type</span>
+                </Label>
+                <div className="flex gap-4" role="radiogroup" aria-label="Media format type">
                   <Button 
                     type="button" 
                     variant={formData.type === 'audio' ? 'default' : 'outline'} 
                     className="flex-1 rounded-xl h-12 gap-2"
                     onClick={() => handleInputChange("type", "audio")}
+                    role="radio"
+                    aria-checked={formData.type === 'audio'}
                   >
-                    <Music className="h-4 w-4" /> Audio
+                    <Music className="h-4 w-4" aria-hidden="true" /> Audio
                   </Button>
                   <Button 
                     type="button" 
                     variant={formData.type === 'video' ? 'default' : 'outline'} 
                     className="flex-1 rounded-xl h-12 gap-2"
                     onClick={() => handleInputChange("type", "video")}
+                    role="radio"
+                    aria-checked={formData.type === 'video'}
                   >
-                    <Video className="h-4 w-4" /> Video
+                    <Video className="h-4 w-4" aria-hidden="true" /> Video
                   </Button>
                 </div>
               </div>
@@ -190,10 +197,12 @@ export default function SubmitBhajanPage() {
                 <Label htmlFor="url">Media URL (YouTube/SoundCloud/Direct Link)</Label>
                 <Input 
                   id="url" 
+                  type="url"
                   placeholder="https://..." 
                   value={formData.url}
                   onChange={(e) => handleInputChange("url", e.target.value)}
                   required
+                  aria-required="true"
                 />
               </div>
 
@@ -209,11 +218,16 @@ export default function SubmitBhajanPage() {
               </div>
             </CardContent>
             <CardFooter className="bg-secondary/20 p-8 flex justify-end">
-              <Button type="submit" disabled={loading} className="rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-primary/20">
+              <Button 
+                type="submit" 
+                disabled={loading} 
+                className="rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-primary/20"
+                aria-label={loading ? "Submitting your bhajan..." : "Submit bhajan for review"}
+              >
                 {loading ? (
-                  <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Submitting...</>
+                  <><Loader2 className="h-5 w-5 animate-spin mr-2" aria-hidden="true" /> Submitting...</>
                 ) : (
-                  <><UploadCloud className="h-5 w-5 mr-2" /> Submit for Review</>
+                  <><UploadCloud className="h-5 w-5 mr-2" aria-hidden="true" /> Submit for Review</>
                 )}
               </Button>
             </CardFooter>
