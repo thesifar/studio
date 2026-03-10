@@ -51,8 +51,8 @@ export function Navigation() {
                 className={cn(
                   "text-sm font-bold tracking-wide transition-colors hover:text-primary",
                   pathname === item.href 
-                    ? "text-primary" 
-                    : (isScrolled ? "text-muted-foreground" : (pathname === '/' ? "text-white/80" : "text-muted-foreground"))
+                    ? (isScrolled ? "text-primary" : (pathname === '/' ? "text-white" : "text-primary"))
+                    : (isScrolled ? "text-muted-foreground" : (pathname === '/' ? "text-white/70" : "text-muted-foreground"))
                 )}
               >
                 {item.label}
