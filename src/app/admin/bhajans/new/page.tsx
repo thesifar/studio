@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -10,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Wand2, Tag, Save, X, Loader2, Music, Video as VideoIcon } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Wand2, Tag, Save, X, Loader2, Music, Video as VideoIcon, PlusCircle } from "lucide-react";
 import { CATEGORIES, LANGUAGES } from "@/lib/mock-data";
 import { generateBhajanDescription } from "@/ai/flows/admin-bhajan-description-generation";
 import { adminBhajanTagSuggestion } from "@/ai/flows/admin-bhajan-tag-suggestion-flow";
@@ -91,7 +90,6 @@ export default function AddBhajanPage() {
       toast({ title: "Tags Suggested", description: "AI suggested relevant tags and categories." });
       
       if (result.suggestedCategories.length > 0 && !formData.category) {
-        // Just pick the first suggested category if none is set
         setFormData(prev => ({ ...prev, category: result.suggestedCategories[0] }));
       }
     } catch (error) {
@@ -104,7 +102,6 @@ export default function AddBhajanPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate save
     setTimeout(() => {
       setLoading(false);
       toast({ title: "Success", description: "New bhajan has been added to the collection." });
@@ -126,7 +123,6 @@ export default function AddBhajanPage() {
         <main className="p-6 max-w-4xl mx-auto w-full">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column: Basic Info */}
               <div className="space-y-6">
                 <Card className="border-none shadow-sm">
                   <CardHeader>
@@ -231,7 +227,6 @@ export default function AddBhajanPage() {
                 </Card>
               </div>
 
-              {/* Right Column: AI Tools & Tags */}
               <div className="space-y-6">
                 <Card className="border-none shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-2 bg-primary/10 rounded-bl-xl text-[10px] font-bold text-primary uppercase tracking-wider flex items-center gap-1">

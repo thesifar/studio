@@ -1,10 +1,9 @@
-
 "use client";
 
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Music, Video, Users, TrendingUp, PlayCircle, PlusCircle } from "lucide-react";
+import { Music, Video, Users, TrendingUp, PlusCircle, Settings } from "lucide-react";
 import { BHAJANS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

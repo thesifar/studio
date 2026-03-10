@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const featuredBhajans = BHAJANS.slice(0, 4);
-  const heroImage = PlaceHolderImages.find(img => img.id === "temple-sunset")?.imageUrl || "";
+  const heroImageObj = PlaceHolderImages.find(img => img.id === "temple-sunset");
+  const heroImage = heroImageObj?.imageUrl;
 
   return (
     <div className="flex flex-col min-h-screen bg-spiritual-gradient">
@@ -21,14 +22,16 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-          <Image
-            src={heroImage}
-            alt="Divine Temple"
-            fill
-            className="object-cover brightness-50"
-            priority
-            data-ai-hint="temple sunset"
-          />
+          {heroImage && (
+            <Image
+              src={heroImage}
+              alt="Divine Temple"
+              fill
+              className="object-cover brightness-50"
+              priority
+              data-ai-hint="temple sunset"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="container relative z-10 px-4 text-center">
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 text-white mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
