@@ -35,9 +35,12 @@ export default function Home() {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="container relative z-10 px-4 text-center">
-            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/20 backdrop-blur-md border border-primary/30 text-white mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              <Star className="h-4 w-4 fill-white text-white" />
-              <span className="text-sm font-bold uppercase tracking-[0.2em]">Divine Sanctuary</span>
+            {/* Refined Divine Sanctuary Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white/90 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 shadow-2xl">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.35em] pl-1">
+                Divine Sanctuary
+              </span>
             </div>
             
             <h1 className="font-headline text-5xl md:text-8xl font-bold text-white mb-8 tracking-tight leading-none animate-in fade-in zoom-in-95 duration-1000">
