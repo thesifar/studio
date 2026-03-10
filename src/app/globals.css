@@ -4,34 +4,34 @@
 
 @layer base {
   :root {
-    --background: 35 30% 99%;
-    --foreground: 20 20% 12%;
+    --background: 231 29% 95%; /* #EEEFF6 */
+    --foreground: 238 50% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 20 20% 15%;
+    --card-foreground: 238 50% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 20% 15%;
-    --primary: 32 95% 48%;
-    --primary-foreground: 35 30% 99%;
-    --secondary: 35 25% 96%;
-    --secondary-foreground: 32 95% 20%;
-    --muted: 35 15% 92%;
-    --muted-foreground: 20 10% 45%;
-    --accent: 350 70% 42%;
+    --popover-foreground: 238 50% 15%;
+    --primary: 238 50% 58%; /* #5F63C9 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 231 29% 90%;
+    --secondary-foreground: 238 50% 30%;
+    --muted: 231 20% 88%;
+    --muted-foreground: 238 10% 45%;
+    --accent: 230 70% 41%; /* #1F38B3 */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 32 20% 92%;
-    --input: 32 20% 92%;
-    --ring: 32 95% 48%;
-    --radius: 1.25rem;
-    --sidebar-background: 35 25% 98%;
-    --sidebar-foreground: 20 15% 25%;
-    --sidebar-primary: 32 95% 48%;
+    --border: 238 20% 85%;
+    --input: 238 20% 85%;
+    --ring: 238 50% 58%;
+    --radius: 1rem;
+    --sidebar-background: 231 29% 92%;
+    --sidebar-foreground: 238 50% 20%;
+    --sidebar-primary: 238 50% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 32 95% 95%;
-    --sidebar-accent-foreground: 32 95% 25%;
-    --sidebar-border: 32 20% 92%;
-    --sidebar-ring: 32 95% 48%;
+    --sidebar-accent: 238 50% 90%;
+    --sidebar-accent-foreground: 238 50% 30%;
+    --sidebar-border: 238 20% 85%;
+    --sidebar-ring: 238 50% 58%;
   }
 }
 
@@ -40,20 +40,29 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground selection:bg-primary/20 antialiased;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20;
   }
 }
 
-.bg-pattern {
-  background-image: 
-    radial-gradient(circle at 100% 100%, hsl(var(--primary) / 0.03) 0, transparent 40%),
-    radial-gradient(circle at 0% 0%, hsl(var(--primary) / 0.03) 0, transparent 40%);
+.bg-spiritual-gradient {
+  background: radial-gradient(circle at top left, hsla(var(--primary), 0.05), transparent),
+              radial-gradient(circle at bottom right, hsla(var(--accent), 0.05), transparent);
 }
 
-.glass-effect {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
+.glass-nav {
+  @apply bg-background/70 backdrop-blur-xl border-b border-primary/10;
 }
 
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-accent;
+.text-spiritual {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
 }
