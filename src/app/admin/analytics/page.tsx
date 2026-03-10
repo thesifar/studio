@@ -4,8 +4,8 @@ import { useState } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer } from "recharts";
-import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, Line, LineChart, Pie, PieChart, Cell } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Music, Users, TrendingUp, PlayCircle, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -30,14 +30,13 @@ const dataSets = {
       { name: "Ganesha Stuti", value: 200 },
       { name: "Hanuman Chalisa", value: 278 },
     ],
-    peakHours: [
-      { hour: "4am", users: 120 },
-      { hour: "6am", users: 450 },
-      { hour: "8am", users: 300 },
-      { hour: "12pm", users: 200 },
-      { hour: "6pm", users: 580 },
-      { hour: "8pm", users: 720 },
-      { hour: "10pm", users: 310 },
+    engagementData: [
+      { time: "4am", users: 120 },
+      { time: "8am", users: 450 },
+      { time: "12pm", users: 300 },
+      { time: "4pm", users: 580 },
+      { time: "8pm", users: 720 },
+      { time: "12am", users: 310 },
     ]
   },
   "month": {
@@ -56,11 +55,11 @@ const dataSets = {
       { name: "Ganesha Stuti", value: 950 },
       { name: "Hanuman Chalisa", value: 1200 },
     ],
-    peakHours: [
-      { hour: "W1", users: 1200 },
-      { hour: "W2", users: 1450 },
-      { hour: "W3", users: 1300 },
-      { hour: "W4", users: 1580 },
+    engagementData: [
+      { time: "W1", users: 1200 },
+      { time: "W2", users: 1450 },
+      { time: "W3", users: 1300 },
+      { time: "W4", users: 1580 },
     ]
   },
   "year": {
@@ -87,11 +86,11 @@ const dataSets = {
       { name: "Ganesha Stuti", value: 38000 },
       { name: "Hanuman Chalisa", value: 39800 },
     ],
-    peakHours: [
-      { hour: "Q1", users: 35000 },
-      { hour: "Q2", users: 41000 },
-      { hour: "Q3", users: 45000 },
-      { hour: "Q4", users: 52000 },
+    engagementData: [
+      { time: "Q1", users: 35000 },
+      { time: "Q2", users: 41000 },
+      { time: "Q3", users: 45000 },
+      { time: "Q4", users: 52000 },
     ]
   }
 };
@@ -123,7 +122,7 @@ export default function AdminAnalyticsPage() {
         <header className="flex h-16 shrink-0 items-center justify-between px-6 border-b">
           <div className="flex items-center gap-4">
             <SidebarTrigger />
-            <h1 className="font-headline text-2xl font-bold">Analytics & Insights</h1>
+            <h1 className="font-headline text-2xl font-bold">Analytics Dashboard</h1>
           </div>
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -151,7 +150,7 @@ export default function AdminAnalyticsPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{currentData.totalStreams}</div>
                 <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +12% vs previous period
+                  <TrendingUp className="h-3 w-3 mr-1" /> +12% growth
                 </p>
               </CardContent>
             </Card>
@@ -163,28 +162,28 @@ export default function AdminAnalyticsPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{currentData.uniqueListeners}</div>
                 <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +5% vs previous period
+                  <TrendingUp className="h-3 w-3 mr-1" /> +5% growth
                 </p>
               </CardContent>
             </Card>
             <Card className="border-none shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Avg. Session Time</CardTitle>
+                <CardTitle className="text-sm font-medium">Avg. Duration</CardTitle>
                 <TrendingUp className="h-4 w-4 text-primary/80" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">24m 15s</div>
-                <p className="text-xs text-muted-foreground mt-1">Stable across devices</p>
+                <p className="text-xs text-muted-foreground mt-1">Stable session time</p>
               </CardContent>
             </Card>
             <Card className="border-none shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">New Submissions</CardTitle>
+                <CardTitle className="text-sm font-medium">New Content</CardTitle>
                 <Music className="h-4 w-4 text-orange-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">18</div>
-                <p className="text-xs text-muted-foreground mt-1">Awaiting AI metadata</p>
+                <p className="text-xs text-muted-foreground mt-1">Added this period</p>
               </CardContent>
             </Card>
           </div>
@@ -193,8 +192,8 @@ export default function AdminAnalyticsPage() {
             {/* Play Trend Chart */}
             <Card className="border-none shadow-sm">
               <CardHeader>
-                <CardTitle className="font-headline">Play Trends ({currentData.label})</CardTitle>
-                <CardDescription>Number of bhajans played per period</CardDescription>
+                <CardTitle className="font-headline">Play Trends</CardTitle>
+                <CardDescription>Streaming volume for {currentData.label}</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
                 <ChartContainer config={chartConfig} className="h-full w-full">
@@ -206,7 +205,7 @@ export default function AdminAnalyticsPage() {
                       tickLine={false} 
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} 
                     />
-                    <Tooltip 
+                    <ChartTooltip 
                       cursor={{ fill: 'hsl(var(--secondary)/0.5)' }} 
                       content={<ChartTooltipContent hideLabel />} 
                     />
@@ -224,8 +223,8 @@ export default function AdminAnalyticsPage() {
             {/* Category Distribution Chart */}
             <Card className="border-none shadow-sm">
               <CardHeader>
-                <CardTitle className="font-headline">Devotion Distribution</CardTitle>
-                <CardDescription>Popularity by bhajan category</CardDescription>
+                <CardTitle className="font-headline">Devotion Categories</CardTitle>
+                <CardDescription>Popularity by bhajan theme</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
                 <ChartContainer config={chartConfig} className="h-full w-full">
@@ -239,17 +238,17 @@ export default function AdminAnalyticsPage() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {currentData.categoryData.map((entry, index) => (
+                      {currentData.categoryData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
                   </PieChart>
                 </ChartContainer>
                 <div className="flex flex-col gap-2 ml-4">
                    {currentData.categoryData.map((item, i) => (
                      <div key={item.name} className="flex items-center gap-2">
-                       <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
+                       <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                        <span className="text-[10px] font-medium whitespace-nowrap">{item.name}</span>
                      </div>
                    ))}
@@ -258,18 +257,18 @@ export default function AdminAnalyticsPage() {
             </Card>
           </div>
 
-          {/* Peak Hours / Periodic Engagement */}
+          {/* Engagement Chart */}
           <Card className="border-none shadow-sm">
             <CardHeader>
-              <CardTitle className="font-headline">Engagement Analysis</CardTitle>
-              <CardDescription>Active users throughout the selected period</CardDescription>
+              <CardTitle className="font-headline">User Engagement</CardTitle>
+              <CardDescription>Active users throughout the period</CardDescription>
             </CardHeader>
             <CardContent className="h-[300px]">
                <ChartContainer config={chartConfig} className="h-full w-full">
-                 <LineChart data={currentData.peakHours}>
+                 <LineChart data={currentData.engagementData}>
                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                   <XAxis dataKey="hour" axisLine={false} tickLine={false} />
-                   <Tooltip content={<ChartTooltipContent />} />
+                   <XAxis dataKey="time" axisLine={false} tickLine={false} />
+                   <ChartTooltip content={<ChartTooltipContent />} />
                    <Line 
                      type="monotone" 
                      dataKey="users" 
