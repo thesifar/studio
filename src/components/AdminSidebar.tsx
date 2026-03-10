@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Music4, PlusCircle, LogOut, Settings, BarChart3, Home, Tags } from "lucide-react";
+import { LayoutDashboard, Music4, PlusCircle, LogOut, Settings, BarChart3, Home, Tags, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
@@ -13,6 +12,7 @@ export function AdminSidebar() {
   const menuItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Manage Bhajans", href: "/admin/bhajans", icon: Music4 },
+    { label: "Submissions", href: "/admin/submissions", icon: Inbox, badge: "3" },
     { label: "Manage Categories", href: "/admin/categories", icon: Tags },
     { label: "Add New Bhajan", href: "/admin/bhajans/new", icon: PlusCircle },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
@@ -37,7 +37,7 @@ export function AdminSidebar() {
                 asChild 
                 isActive={pathname === item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-6 rounded-xl transition-all",
+                  "flex items-center gap-3 px-4 py-6 rounded-xl transition-all relative",
                   pathname === item.href 
                     ? "bg-primary text-primary-foreground shadow-sm" 
                     : "hover:bg-primary/10 text-muted-foreground hover:text-primary"
@@ -46,6 +46,11 @@ export function AdminSidebar() {
                 <Link href={item.href}>
                   <item.icon className="h-5 w-5" />
                   <span className="font-medium">{item.label}</span>
+                  {item.badge && pathname !== item.href && (
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-accent text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
