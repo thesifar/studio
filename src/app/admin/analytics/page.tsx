@@ -1,38 +1,100 @@
 "use client";
 
+import { useState } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Line, LineChart, Pie, PieChart, Cell } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Music, Users, TrendingUp, PlayCircle, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const playTrendData = [
-  { day: "Mon", count: 450 },
-  { day: "Tue", count: 520 },
-  { day: "Wed", count: 480 },
-  { day: "Thu", count: 610 },
-  { day: "Fri", count: 590 },
-  { day: "Sat", count: 850 },
-  { day: "Sun", count: 920 },
-];
-
-const categoryData = [
-  { name: "Krishna Bhakti", value: 400 },
-  { name: "Shiva Mahima", value: 300 },
-  { name: "Ganesha Stuti", value: 200 },
-  { name: "Hanuman Chalisa", value: 278 },
-];
-
-const peakHoursData = [
-  { hour: "4am", users: 120 },
-  { hour: "6am", users: 450 },
-  { hour: "8am", users: 300 },
-  { hour: "12pm", users: 200 },
-  { hour: "6pm", users: 580 },
-  { hour: "8pm", users: 720 },
-  { hour: "10pm", users: 310 },
-];
+// Mock Data Sets
+const dataSets = {
+  "7days": {
+    label: "Last 7 Days",
+    totalStreams: "4,420",
+    uniqueListeners: "1,284",
+    trendData: [
+      { label: "Mon", count: 450 },
+      { label: "Tue", count: 520 },
+      { label: "Wed", count: 480 },
+      { label: "Thu", count: 610 },
+      { label: "Fri", count: 590 },
+      { label: "Sat", count: 850 },
+      { label: "Sun", count: 920 },
+    ],
+    categoryData: [
+      { name: "Krishna Bhakti", value: 400 },
+      { name: "Shiva Mahima", value: 300 },
+      { name: "Ganesha Stuti", value: 200 },
+      { name: "Hanuman Chalisa", value: 278 },
+    ],
+    peakHours: [
+      { hour: "4am", users: 120 },
+      { hour: "6am", users: 450 },
+      { hour: "8am", users: 300 },
+      { hour: "12pm", users: 200 },
+      { hour: "6pm", users: 580 },
+      { hour: "8pm", users: 720 },
+      { hour: "10pm", users: 310 },
+    ]
+  },
+  "month": {
+    label: "Last Month",
+    totalStreams: "18,250",
+    uniqueListeners: "5,420",
+    trendData: [
+      { label: "Week 1", count: 4100 },
+      { label: "Week 2", count: 4800 },
+      { label: "Week 3", count: 4350 },
+      { label: "Week 4", count: 5000 },
+    ],
+    categoryData: [
+      { name: "Krishna Bhakti", value: 1800 },
+      { name: "Shiva Mahima", value: 1400 },
+      { name: "Ganesha Stuti", value: 950 },
+      { name: "Hanuman Chalisa", value: 1200 },
+    ],
+    peakHours: [
+      { hour: "W1", users: 1200 },
+      { hour: "W2", users: 1450 },
+      { hour: "W3", users: 1300 },
+      { hour: "W4", users: 1580 },
+    ]
+  },
+  "year": {
+    label: "Last Year",
+    totalStreams: "214,800",
+    uniqueListeners: "42,150",
+    trendData: [
+      { label: "Jan", count: 15200 },
+      { label: "Feb", count: 14800 },
+      { label: "Mar", count: 16500 },
+      { label: "Apr", count: 18100 },
+      { label: "May", count: 17200 },
+      { label: "Jun", count: 19500 },
+      { label: "Jul", count: 21000 },
+      { label: "Aug", count: 22500 },
+      { label: "Sep", count: 20800 },
+      { label: "Oct", count: 23400 },
+      { label: "Nov", count: 24900 },
+      { label: "Dec", count: 27800 },
+    ],
+    categoryData: [
+      { name: "Krishna Bhakti", value: 75000 },
+      { name: "Shiva Mahima", value: 62000 },
+      { name: "Ganesha Stuti", value: 38000 },
+      { name: "Hanuman Chalisa", value: 39800 },
+    ],
+    peakHours: [
+      { hour: "Q1", users: 35000 },
+      { hour: "Q2", users: 41000 },
+      { hour: "Q3", users: 45000 },
+      { hour: "Q4", users: 52000 },
+    ]
+  }
+};
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--primary)/0.6)', 'hsl(var(--accent)/0.6)'];
 
@@ -51,6 +113,9 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function AdminAnalyticsPage() {
+  const [range, setRange] = useState<keyof typeof dataSets>("7days");
+  const currentData = dataSets[range];
+
   return (
     <SidebarProvider>
       <AdminSidebar />
@@ -60,9 +125,18 @@ export default function AdminAnalyticsPage() {
             <SidebarTrigger />
             <h1 className="font-headline text-2xl font-bold">Analytics & Insights</h1>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-full">
-            <Calendar className="h-4 w-4" />
-            <span>Last 7 Days</span>
+          <div className="flex items-center gap-3">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Select value={range} onValueChange={(v) => setRange(v as keyof typeof dataSets)}>
+              <SelectTrigger className="w-[180px] rounded-full bg-secondary/30 border-none h-9">
+                <SelectValue placeholder="Select period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7days">Last 7 Days</SelectItem>
+                <SelectItem value="month">Last Month</SelectItem>
+                <SelectItem value="year">Last Year</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </header>
 
@@ -75,9 +149,9 @@ export default function AdminAnalyticsPage() {
                 <PlayCircle className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4,420</div>
+                <div className="text-2xl font-bold">{currentData.totalStreams}</div>
                 <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +12% from last week
+                  <TrendingUp className="h-3 w-3 mr-1" /> +12% vs previous period
                 </p>
               </CardContent>
             </Card>
@@ -87,9 +161,9 @@ export default function AdminAnalyticsPage() {
                 <Users className="h-4 w-4 text-accent" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,284</div>
+                <div className="text-2xl font-bold">{currentData.uniqueListeners}</div>
                 <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +5% from last week
+                  <TrendingUp className="h-3 w-3 mr-1" /> +5% vs previous period
                 </p>
               </CardContent>
             </Card>
@@ -119,18 +193,18 @@ export default function AdminAnalyticsPage() {
             {/* Play Trend Chart */}
             <Card className="border-none shadow-sm">
               <CardHeader>
-                <CardTitle className="font-headline">Daily Play Trends</CardTitle>
-                <CardDescription>Number of bhajans played per day</CardDescription>
+                <CardTitle className="font-headline">Play Trends ({currentData.label})</CardTitle>
+                <CardDescription>Number of bhajans played per period</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
                 <ChartContainer config={chartConfig} className="h-full w-full">
-                  <BarChart data={playTrendData}>
+                  <BarChart data={currentData.trendData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis 
-                      dataKey="day" 
+                      dataKey="label" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} 
                     />
                     <Tooltip 
                       cursor={{ fill: 'hsl(var(--secondary)/0.5)' }} 
@@ -140,7 +214,7 @@ export default function AdminAnalyticsPage() {
                       dataKey="count" 
                       fill="hsl(var(--primary))" 
                       radius={[4, 4, 0, 0]} 
-                      barSize={40}
+                      barSize={range === 'year' ? 20 : 40}
                     />
                   </BarChart>
                 </ChartContainer>
@@ -157,7 +231,7 @@ export default function AdminAnalyticsPage() {
                 <ChartContainer config={chartConfig} className="h-full w-full">
                   <PieChart>
                     <Pie
-                      data={categoryData}
+                      data={currentData.categoryData}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -165,7 +239,7 @@ export default function AdminAnalyticsPage() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {categoryData.map((entry, index) => (
+                      {currentData.categoryData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -173,10 +247,10 @@ export default function AdminAnalyticsPage() {
                   </PieChart>
                 </ChartContainer>
                 <div className="flex flex-col gap-2 ml-4">
-                   {categoryData.map((item, i) => (
+                   {currentData.categoryData.map((item, i) => (
                      <div key={item.name} className="flex items-center gap-2">
                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                       <span className="text-xs font-medium">{item.name}</span>
+                       <span className="text-[10px] font-medium whitespace-nowrap">{item.name}</span>
                      </div>
                    ))}
                 </div>
@@ -184,15 +258,15 @@ export default function AdminAnalyticsPage() {
             </Card>
           </div>
 
-          {/* Device Usage Line Chart */}
+          {/* Peak Hours / Periodic Engagement */}
           <Card className="border-none shadow-sm">
             <CardHeader>
-              <CardTitle className="font-headline">Peak Hours Engagement</CardTitle>
-              <CardDescription>Active users throughout the day (Average)</CardDescription>
+              <CardTitle className="font-headline">Engagement Analysis</CardTitle>
+              <CardDescription>Active users throughout the selected period</CardDescription>
             </CardHeader>
             <CardContent className="h-[300px]">
                <ChartContainer config={chartConfig} className="h-full w-full">
-                 <LineChart data={peakHoursData}>
+                 <LineChart data={currentData.peakHours}>
                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                    <XAxis dataKey="hour" axisLine={false} tickLine={false} />
                    <Tooltip content={<ChartTooltipContent />} />
