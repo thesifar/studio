@@ -3,9 +3,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Music4, PlusCircle, LogOut, Settings, BarChart3, Home } from "lucide-react";
+import { LayoutDashboard, Music4, PlusCircle, LogOut, Settings, BarChart3, Home, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider } from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -13,6 +13,7 @@ export function AdminSidebar() {
   const menuItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Manage Bhajans", href: "/admin/bhajans", icon: Music4 },
+    { label: "Manage Categories", href: "/admin/categories", icon: Tags },
     { label: "Add New Bhajan", href: "/admin/bhajans/new", icon: PlusCircle },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { label: "Settings", href: "/admin/settings", icon: Settings },
