@@ -1,71 +1,69 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Check, X, Search, MonitorPlay, Music, Eye } from "lucide-react";
+import { Check, X, Search, MonitorPlay, Music, Eye, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-
-// Mock Submissions
-const MOCK_SUBMISSIONS = [
-  {
-    id: "s1",
-    title: "Vande Mataram",
-    artist: "Pratibha Singh",
-    category: "Devi Aradhana",
-    language: "Sanskrit",
-    type: "audio",
-    submittedAt: "2024-03-20T14:30:00Z"
-  },
-  {
-    id: "s2",
-    title: "Hanuman Ashtak",
-    artist: "Hari Om Sharan",
-    category: "Hanuman Chalisa",
-    language: "Hindi",
-    type: "video",
-    submittedAt: "2024-03-21T09:15:00Z"
-  },
-  {
-    id: "s3",
-    title: "Om Namah Shivaya",
-    artist: "Bhakti Chorus",
-    category: "Shiva Mahima",
-    language: "Hindi",
-    type: "audio",
-    submittedAt: "2024-03-21T16:45:00Z"
-  }
-];
+import { useFirestore, useCollection } from "@/firebase";
+import { collection, query, where, orderBy, updateDoc, doc } from "firebase/firestore";
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AdminSubmissionsPage() {
-  const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
+  const db = useFirestore();
   const [search, setSearch] = useState("");
+  const [isClient, setIsClient] = useState(false);
 
-  const handleApprove = (id: string) => {
-    setSubmissions(prev => prev.filter(s => s.id !== id));
-    toast({
-      title: "Approved",
-      description: "Submission has been published to the divine collection.",
-    });
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const submissionsQuery = query(
+    collection(db || ({} as any), 'submissions'),
+    where('status', '==', 'pending'),
+    orderBy('submittedAt', 'desc')
+  );
+
+  const { data: submissions, loading } = useCollection(db ? submissionsQuery : null);
+
+  const handleApprove = async (id: string) => {
+    if (!db) return;
+    const docRef = doc(db, 'submissions', id);
+    updateDoc(docRef, { status: 'approved' })
+      .then(() => {
+        toast({ title: "Approved", description: "Submission has been published." });
+      })
+      .catch(async () => {
+        const err = new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: { status: 'approved' } });
+        errorEmitter.emit('permission-error', err);
+      });
   };
 
-  const handleReject = (id: string) => {
-    setSubmissions(prev => prev.filter(s => s.id !== id));
-    toast({
-      title: "Rejected",
-      description: "Submission has been removed from the review queue.",
-      variant: "destructive"
-    });
+  const handleReject = async (id: string) => {
+    if (!db) return;
+    const docRef = doc(db, 'submissions', id);
+    updateDoc(docRef, { status: 'rejected' })
+      .then(() => {
+        toast({ title: "Rejected", description: "Submission has been removed.", variant: "destructive" });
+      })
+      .catch(async () => {
+        const err = new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: { status: 'rejected' } });
+        errorEmitter.emit('permission-error', err);
+      });
   };
 
-  const filtered = submissions.filter(s => 
+  const filtered = (submissions || []).filter(s => 
     s.title.toLowerCase().includes(search.toLowerCase()) || 
     s.artist.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (!isClient) return null;
 
   return (
     <SidebarProvider>
@@ -77,7 +75,7 @@ export default function AdminSubmissionsPage() {
             <h1 className="font-headline text-2xl font-bold">User Submissions</h1>
           </div>
           <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 px-3 py-1">
-            {submissions.length} Pending
+            {loading ? "..." : (submissions?.length || 0)} Pending
           </Badge>
         </header>
 
@@ -95,75 +93,81 @@ export default function AdminSubmissionsPage() {
           </div>
 
           <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader className="bg-secondary/30">
-                <TableRow>
-                  <TableHead className="w-[80px]">Type</TableHead>
-                  <TableHead>Content</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Date Submitted</TableHead>
-                  <TableHead className="text-right">Decision</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.length > 0 ? (
-                  filtered.map((sub) => (
-                    <TableRow key={sub.id} className="hover:bg-secondary/10 transition-colors">
-                      <TableCell>
-                         <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${sub.type === 'video' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
-                           {sub.type === 'video' ? <MonitorPlay className="h-5 w-5" /> : <Music className="h-5 w-5" />}
-                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-semibold text-sm line-clamp-1">{sub.title}</p>
-                          <p className="text-xs text-muted-foreground">{sub.artist}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wider border-primary/20 text-primary">
-                          {sub.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {new Date(sub.submittedAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" title="View Detail">
-                             <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={() => handleApprove(sub.id)}
-                            title="Approve"
-                          >
-                             <Check className="h-5 w-5" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="text-destructive hover:bg-destructive/10"
-                            onClick={() => handleReject(sub.id)}
-                            title="Reject"
-                          >
-                             <X className="h-5 w-5" />
-                          </Button>
-                        </div>
+            {loading ? (
+              <div className="h-64 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader className="bg-secondary/30">
+                  <TableRow>
+                    <TableHead className="w-[80px]">Type</TableHead>
+                    <TableHead>Content</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Date Submitted</TableHead>
+                    <TableHead className="text-right">Decision</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.length > 0 ? (
+                    filtered.map((sub) => (
+                      <TableRow key={sub.id} className="hover:bg-secondary/10 transition-colors">
+                        <TableCell>
+                           <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${sub.type === 'video' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                             {sub.type === 'video' ? <MonitorPlay className="h-5 w-5" /> : <Music className="h-5 w-5" />}
+                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-semibold text-sm line-clamp-1">{sub.title}</p>
+                            <p className="text-xs text-muted-foreground">{sub.artist}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wider border-primary/20 text-primary">
+                            {sub.category}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {sub.submittedAt?.toDate ? sub.submittedAt.toDate().toLocaleDateString() : 'Pending...'}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="icon" title="View Detail">
+                               <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              onClick={() => handleApprove(sub.id)}
+                              title="Approve"
+                            >
+                               <Check className="h-5 w-5" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-destructive hover:bg-destructive/10"
+                              onClick={() => handleReject(sub.id)}
+                              title="Reject"
+                            >
+                               <X className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                        No pending submissions found.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                      No pending submissions found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </main>
       </SidebarInset>

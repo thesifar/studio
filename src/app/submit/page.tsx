@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -12,8 +13,13 @@ import { CATEGORIES, LANGUAGES } from "@/lib/mock-data";
 import { UploadCloud, Music, Video, Loader2, CheckCircle2, Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function SubmitBhajanPage() {
+  const db = useFirestore();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,17 +38,36 @@ export default function SubmitBhajanPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
+    
     setLoading(true);
     
-    // Simulate Submission
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      toast({
-        title: "Submission Received",
-        description: "Your bhajan has been sent for administrative review.",
+    const submissionData = {
+      ...formData,
+      status: 'pending',
+      submittedAt: serverTimestamp()
+    };
+
+    const submissionsRef = collection(db, 'submissions');
+    
+    addDoc(submissionsRef, submissionData)
+      .then(() => {
+        setLoading(false);
+        setSubmitted(true);
+        toast({
+          title: "Submission Received",
+          description: "Your bhajan has been sent for administrative review.",
+        });
+      })
+      .catch(async (error) => {
+        setLoading(false);
+        const permissionError = new FirestorePermissionError({
+          path: submissionsRef.path,
+          operation: 'create',
+          requestResourceData: submissionData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
       });
-    }, 2000);
   };
 
   if (submitted) {

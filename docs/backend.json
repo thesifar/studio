@@ -1,0 +1,31 @@
+
+{
+  "entities": {
+    "Submission": {
+      "title": "Submission",
+      "description": "A bhajan submission from a user waiting for administrative approval.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The title of the bhajan" },
+        "artist": { "type": "string", "description": "The artist or singer" },
+        "category": { "type": "string", "description": "The devotional category" },
+        "language": { "type": "string", "description": "The language of the bhajan" },
+        "type": { "type": "string", "enum": ["audio", "video"], "description": "Media format" },
+        "url": { "type": "string", "description": "URL to the media resource" },
+        "description": { "type": "string", "description": "Optional description" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "Approval status" },
+        "submittedAt": { "type": "string", "format": "date-time", "description": "Timestamp of submission" }
+      },
+      "required": ["title", "artist", "url", "type", "status", "submittedAt"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Collection of user-submitted bhajans awaiting review."
+    }
+  }
+}
