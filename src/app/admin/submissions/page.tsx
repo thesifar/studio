@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Check, X, Search, MonitorPlay, Music, Eye, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -99,6 +98,7 @@ export default function AdminSubmissionsPage() {
               </div>
             ) : (
               <Table>
+                <TableCaption>A list of user-submitted bhajans awaiting administrative review.</TableCaption>
                 <TableHeader className="bg-secondary/30">
                   <TableRow>
                     <TableHead className="w-[80px]">Type</TableHead>

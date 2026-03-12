@@ -74,7 +74,11 @@ export default function SubmitBhajanPage() {
       <div className="min-h-screen bg-spiritual-gradient flex flex-col">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4" role="main">
-          <Card className="max-w-md w-full text-center p-8 border-none shadow-2xl rounded-[2rem] bg-white/80 backdrop-blur-md">
+          <Card 
+            className="max-w-md w-full text-center p-8 border-none shadow-2xl rounded-[2rem] bg-white/80 backdrop-blur-md"
+            role="status"
+            aria-live="polite"
+          >
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="h-10 w-10 text-primary" aria-hidden="true" />
             </div>
