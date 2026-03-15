@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -121,6 +120,8 @@ export default function SubmitBhajanPage() {
     );
   }
 
+  if (!mounted) return null;
+
   return (
     <div className="min-h-screen bg-spiritual-gradient flex flex-col">
       <Navigation />
@@ -133,7 +134,7 @@ export default function SubmitBhajanPage() {
           <p className="text-muted-foreground">Share divine melodies with the community. Everyone is welcome to contribute to our eternal culture.</p>
         </div>
 
-        {mounted && !db && (
+        {!db && (
           <Alert className="mb-8 rounded-2xl bg-primary/5 border-primary/20 text-primary">
             <Info className="h-4 w-4" />
             <AlertDescription className="text-sm">
@@ -213,6 +214,7 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "audio")}
                     role="radio"
                     aria-checked={formData.type === 'audio'}
+                    suppressHydrationWarning
                   >
                     <Music className="h-4 w-4" aria-hidden="true" /> Audio
                   </Button>
@@ -223,6 +225,7 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "video")}
                     role="radio"
                     aria-checked={formData.type === 'video'}
+                    suppressHydrationWarning
                   >
                     <Video className="h-4 w-4" aria-hidden="true" /> Video
                   </Button>
@@ -261,6 +264,7 @@ export default function SubmitBhajanPage() {
                 disabled={loading} 
                 className="rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-primary/20"
                 aria-label={loading ? "Submitting your bhajan..." : "Submit bhajan for review"}
+                suppressHydrationWarning
               >
                 {loading ? (
                   <><Loader2 className="h-5 w-5 animate-spin mr-2" aria-hidden="true" /> Submitting...</>
