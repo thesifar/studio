@@ -9,11 +9,17 @@ import { ArrowRight, Sparkles, Play, Heart, Music } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useState, useEffect } from "react";
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const featuredBhajans = BHAJANS.slice(0, 4);
   const heroImageObj = PlaceHolderImages.find(img => img.id === "temple-sunset");
   const heroImage = heroImageObj?.imageUrl;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-spiritual-gradient">

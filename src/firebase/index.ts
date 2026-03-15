@@ -1,3 +1,4 @@
+
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -17,11 +18,13 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     val.length > 10 && 
     !val.includes('YOUR_') && 
     val !== 'undefined' && 
-    val !== 'null';
+    val !== 'null' &&
+    val !== '';
   
-  const hasConfig = isValidKey(firebaseConfig.apiKey);
+  const hasConfig = isValidKey(firebaseConfig.apiKey) && isValidKey(firebaseConfig.projectId);
   
   if (!hasConfig) {
+    console.warn("Firebase configuration is missing or incomplete. Some features like submissions may be disabled.");
     return { app: null, firestore: null, auth: null };
   }
 
@@ -31,7 +34,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     const auth = getAuth(app);
     return { app, firestore, auth };
   } catch (error) {
-    // Return nulls instead of letting the entire app crash during initialization
+    console.error("Firebase initialization failed:", error);
     return { app: null, firestore: null, auth: null };
   }
 }

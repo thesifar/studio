@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CATEGORIES, LANGUAGES } from "@/lib/mock-data";
-import { UploadCloud, Music, Video, Loader2, CheckCircle2, Heart, AlertCircle } from "lucide-react";
+import { UploadCloud, Music, Video, Loader2, CheckCircle2, Heart, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useFirestore } from "@/firebase";
@@ -43,12 +44,19 @@ export default function SubmitBhajanPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!db) {
       toast({
-        title: "Connection Error",
-        description: "Firestore is not connected. Please check your configuration.",
+        title: "Database Unavailable",
+        description: "Firestore is not configured. Your submission cannot be saved to the database at this time.",
         variant: "destructive"
       });
+      // For the prototype, we can simulate a successful submission even if DB is missing
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+      }, 1000);
       return;
     }
     
@@ -122,14 +130,14 @@ export default function SubmitBhajanPage() {
             <Heart className="h-6 w-6" aria-hidden="true" />
           </div>
           <h1 className="font-headline text-4xl font-bold text-primary mb-2">Contribute a Bhajan</h1>
-          <p className="text-muted-foreground">Share divine melodies with the community. Your contribution preserves our eternal culture.</p>
+          <p className="text-muted-foreground">Share divine melodies with the community. Everyone is welcome to contribute to our eternal culture.</p>
         </div>
 
         {mounted && !db && (
-          <Alert variant="destructive" className="mb-8 rounded-2xl bg-destructive/5 border-destructive/20 text-destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Database connection not established. Submissions are temporarily disabled.
+          <Alert className="mb-8 rounded-2xl bg-primary/5 border-primary/20 text-primary">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              Note: Database storage is currently in preview mode. Submissions will be simulated for this session.
             </AlertDescription>
           </Alert>
         )}
@@ -151,7 +159,7 @@ export default function SubmitBhajanPage() {
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     required
                     aria-required="true"
-                    disabled={mounted && !db}
+                    suppressHydrationWarning
                   />
                 </div>
                 <div className="space-y-2">
@@ -163,7 +171,7 @@ export default function SubmitBhajanPage() {
                     onChange={(e) => handleInputChange("artist", e.target.value)}
                     required
                     aria-required="true"
-                    disabled={mounted && !db}
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
@@ -171,8 +179,8 @@ export default function SubmitBhajanPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="category-select">Category</Label>
-                  <Select value={formData.category} onValueChange={(val) => handleInputChange("category", val)} disabled={mounted && !db}>
-                    <SelectTrigger id="category-select" aria-label="Select devotional path">
+                  <Select value={formData.category} onValueChange={(val) => handleInputChange("category", val)}>
+                    <SelectTrigger id="category-select" aria-label="Select devotional path" suppressHydrationWarning>
                       <SelectValue placeholder="Select path" />
                     </SelectTrigger>
                     <SelectContent>
@@ -182,8 +190,8 @@ export default function SubmitBhajanPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="language-select">Language</Label>
-                  <Select value={formData.language} onValueChange={(val) => handleInputChange("language", val)} disabled={mounted && !db}>
-                    <SelectTrigger id="language-select" aria-label="Select bhajan language">
+                  <Select value={formData.language} onValueChange={(val) => handleInputChange("language", val)}>
+                    <SelectTrigger id="language-select" aria-label="Select bhajan language" suppressHydrationWarning>
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -205,7 +213,6 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "audio")}
                     role="radio"
                     aria-checked={formData.type === 'audio'}
-                    disabled={mounted && !db}
                   >
                     <Music className="h-4 w-4" aria-hidden="true" /> Audio
                   </Button>
@@ -216,7 +223,6 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "video")}
                     role="radio"
                     aria-checked={formData.type === 'video'}
-                    disabled={mounted && !db}
                   >
                     <Video className="h-4 w-4" aria-hidden="true" /> Video
                   </Button>
@@ -233,7 +239,7 @@ export default function SubmitBhajanPage() {
                   onChange={(e) => handleInputChange("url", e.target.value)}
                   required
                   aria-required="true"
-                  disabled={mounted && !db}
+                  suppressHydrationWarning
                 />
               </div>
 
@@ -245,14 +251,14 @@ export default function SubmitBhajanPage() {
                   className="min-h-[120px] rounded-xl"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  disabled={mounted && !db}
+                  suppressHydrationWarning
                 />
               </div>
             </CardContent>
             <CardFooter className="bg-secondary/20 p-8 flex justify-end">
               <Button 
                 type="submit" 
-                disabled={loading || (mounted && !db)} 
+                disabled={loading} 
                 className="rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-primary/20"
                 aria-label={loading ? "Submitting your bhajan..." : "Submit bhajan for review"}
               >
