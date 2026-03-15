@@ -14,18 +14,36 @@
         "url": { "type": "string", "description": "URL to the media resource" },
         "description": { "type": "string", "description": "Optional description" },
         "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "Approval status" },
-        "submittedAt": { "type": "string", "format": "date-time", "description": "Timestamp of submission" }
+        "submittedAt": { "type": "string", "format": "date-time", "description": "Timestamp of submission" },
+        "userId": { "type": "string", "description": "UID of the submitting user" }
       },
       "required": ["title", "artist", "url", "type", "status", "submittedAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Extended information for a registered user.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "createdAt"]
     }
   },
   "auth": {
-    "providers": ["google.com"]
+    "providers": ["google.com", "password"]
   },
   "firestore": {
     "/submissions/{submissionId}": {
       "schema": { "$ref": "#/entities/Submission" },
       "description": "Collection of user-submitted bhajans awaiting review."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles for registered seekers."
     }
   }
 }
