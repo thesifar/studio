@@ -124,6 +124,7 @@ export default function Home() {
                     type="email" 
                     placeholder="Your email address" 
                     className="h-14 px-6 rounded-full border-none bg-white/20 backdrop-blur-lg text-white placeholder:text-white/60 w-full focus:ring-2 focus:ring-white/40 focus:outline-none transition-all"
+                    suppressHydrationWarning
                   />
                   <Button size="lg" className="rounded-full bg-white text-primary hover:bg-white/90 px-10 h-14 text-lg font-bold">
                      Join Now
