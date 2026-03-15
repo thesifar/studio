@@ -48,12 +48,12 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 group text-lg" asChild>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 group text-lg" asChild suppressHydrationWarning>
                 <Link href="/bhajans" className="flex items-center gap-3">
                   Start Listening <Play className="h-5 w-5 fill-current" />
                 </Link>
               </Button>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 text-lg" asChild>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 text-lg" asChild suppressHydrationWarning>
                 <Link href="/bhajans?type=video">Watch Collection</Link>
               </Button>
             </div>
@@ -70,7 +70,7 @@ export default function Home() {
                 </h2>
                 <p className="text-muted-foreground text-lg">Select a path that resonates with your heart.</p>
               </div>
-              <Button variant="ghost" className="text-primary font-bold hover:bg-primary/5 px-6 h-12 rounded-full transition-all" asChild>
+              <Button variant="ghost" className="text-primary font-bold hover:bg-primary/5 px-6 h-12 rounded-full transition-all" asChild suppressHydrationWarning>
                 <Link href="/bhajans" className="flex items-center gap-2">
                   View All <ArrowRight className="h-4 w-4" />
                 </Link>
