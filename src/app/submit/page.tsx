@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -9,13 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CATEGORIES, LANGUAGES } from "@/lib/mock-data";
-import { UploadCloud, Music, Video, Loader2, CheckCircle2, Heart } from "lucide-react";
+import { UploadCloud, Music, Video, Loader2, CheckCircle2, Heart, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SubmitBhajanPage() {
   const db = useFirestore();
@@ -37,7 +39,14 @@ export default function SubmitBhajanPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!db) return;
+    if (!db) {
+      toast({
+        title: "Connection Error",
+        description: "Firestore is not connected. Please check your configuration.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setLoading(true);
     
@@ -112,6 +121,15 @@ export default function SubmitBhajanPage() {
           <p className="text-muted-foreground">Share divine melodies with the community. Your contribution preserves our eternal culture.</p>
         </div>
 
+        {!db && (
+          <Alert variant="destructive" className="mb-8 rounded-2xl bg-destructive/5 border-destructive/20 text-destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Database connection not established. Submissions are temporarily disabled.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} aria-labelledby="form-heading">
           <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden">
             <CardHeader className="bg-primary/5 border-b border-primary/10">
@@ -129,6 +147,7 @@ export default function SubmitBhajanPage() {
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     required
                     aria-required="true"
+                    disabled={!db}
                   />
                 </div>
                 <div className="space-y-2">
@@ -140,6 +159,7 @@ export default function SubmitBhajanPage() {
                     onChange={(e) => handleInputChange("artist", e.target.value)}
                     required
                     aria-required="true"
+                    disabled={!db}
                   />
                 </div>
               </div>
@@ -147,7 +167,7 @@ export default function SubmitBhajanPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="category-select">Category</Label>
-                  <Select value={formData.category} onValueChange={(val) => handleInputChange("category", val)}>
+                  <Select value={formData.category} onValueChange={(val) => handleInputChange("category", val)} disabled={!db}>
                     <SelectTrigger id="category-select" aria-label="Select devotional path">
                       <SelectValue placeholder="Select path" />
                     </SelectTrigger>
@@ -158,7 +178,7 @@ export default function SubmitBhajanPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="language-select">Language</Label>
-                  <Select value={formData.language} onValueChange={(val) => handleInputChange("language", val)}>
+                  <Select value={formData.language} onValueChange={(val) => handleInputChange("language", val)} disabled={!db}>
                     <SelectTrigger id="language-select" aria-label="Select bhajan language">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
@@ -181,6 +201,7 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "audio")}
                     role="radio"
                     aria-checked={formData.type === 'audio'}
+                    disabled={!db}
                   >
                     <Music className="h-4 w-4" aria-hidden="true" /> Audio
                   </Button>
@@ -191,6 +212,7 @@ export default function SubmitBhajanPage() {
                     onClick={() => handleInputChange("type", "video")}
                     role="radio"
                     aria-checked={formData.type === 'video'}
+                    disabled={!db}
                   >
                     <Video className="h-4 w-4" aria-hidden="true" /> Video
                   </Button>
@@ -207,6 +229,7 @@ export default function SubmitBhajanPage() {
                   onChange={(e) => handleInputChange("url", e.target.value)}
                   required
                   aria-required="true"
+                  disabled={!db}
                 />
               </div>
 
@@ -218,13 +241,14 @@ export default function SubmitBhajanPage() {
                   className="min-h-[120px] rounded-xl"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
+                  disabled={!db}
                 />
               </div>
             </CardContent>
             <CardFooter className="bg-secondary/20 p-8 flex justify-end">
               <Button 
                 type="submit" 
-                disabled={loading} 
+                disabled={loading || !db} 
                 className="rounded-full px-10 h-14 font-bold text-lg shadow-lg shadow-primary/20"
                 aria-label={loading ? "Submitting your bhajan..." : "Submit bhajan for review"}
               >

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, ReactNode } from 'react';
@@ -25,9 +26,9 @@ export function FirebaseProvider({
   auth 
 }: { 
   children: ReactNode;
-  app: FirebaseApp;
-  firestore: Firestore;
-  auth: Auth;
+  app: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
 }) {
   return (
     <FirebaseContext.Provider value={{ app, firestore, auth }}>
