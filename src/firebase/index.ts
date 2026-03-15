@@ -11,14 +11,15 @@ import { firebaseConfig } from './config';
  */
 export function initializeFirebase(): { app: FirebaseApp | null; firestore: Firestore | null; auth: Auth | null } {
   // Check if we have a valid configuration to prevent SDK errors
-  const isPlaceholder = (val?: string) => 
-    !val || 
-    val.includes('YOUR_') || 
-    val === 'undefined' || 
-    val === '' || 
-    val === 'null';
+  // We're extra careful with key formats to avoid "invalid-api-key" crashes
+  const isValidKey = (val?: string) => 
+    !!val && 
+    val.length > 10 && 
+    !val.includes('YOUR_') && 
+    val !== 'undefined' && 
+    val !== 'null';
   
-  const hasConfig = !isPlaceholder(firebaseConfig.apiKey);
+  const hasConfig = isValidKey(firebaseConfig.apiKey);
   
   if (!hasConfig) {
     return { app: null, firestore: null, auth: null };
