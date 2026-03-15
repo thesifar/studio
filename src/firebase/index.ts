@@ -1,3 +1,4 @@
+
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -7,10 +8,10 @@ import { firebaseConfig } from './config';
 
 export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; auth: Auth } {
   // Check if configuration is valid before initializing
-  const isValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your-api-key-here';
+  const isValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '';
   
   if (!isValidConfig) {
-    console.error("Firebase configuration is missing or invalid. Please check your .env file.");
+    console.warn("Firebase configuration is missing. The app may not function correctly until .env variables are set.");
   }
 
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();

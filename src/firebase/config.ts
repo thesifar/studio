@@ -1,8 +1,10 @@
+
 'use client';
 
 /**
  * The Firebase configuration object.
  * These values are populated from environment variables defined in .env
+ * Ensure these variables are prefixed with NEXT_PUBLIC_ for client-side access.
  */
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
