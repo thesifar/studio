@@ -7,10 +7,10 @@ import { firebaseConfig } from './config';
 
 export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; auth: Auth } {
   // Check if configuration is valid before initializing
-  const isValidConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
+  const isValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your-api-key-here';
   
   if (!isValidConfig) {
-    console.warn("Firebase configuration is missing. Ensure .env contains valid NEXT_PUBLIC_FIREBASE_* variables.");
+    console.error("Firebase configuration is missing or invalid. Please check your .env file.");
   }
 
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
