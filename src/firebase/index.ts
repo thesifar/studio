@@ -1,3 +1,4 @@
+
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -17,7 +18,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
   
   if (!hasConfig) {
     if (typeof window !== 'undefined') {
-      console.warn("Firebase configuration is missing or contains placeholders. Please update your .env file.");
+      console.warn("Firebase configuration is missing or contains placeholders. Please check your .env file.");
     }
     return { app: null, firestore: null, auth: null };
   }
@@ -29,7 +30,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     return { app, firestore, auth };
   } catch (error) {
     if (typeof window !== 'undefined') {
-      console.error("Failed to initialize Firebase services:", error);
+      console.error("Failed to initialize Firebase services. Check your API key and project permissions:", error);
     }
     return { app: null, firestore: null, auth: null };
   }
