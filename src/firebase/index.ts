@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -12,14 +11,16 @@ import { firebaseConfig } from './config';
  */
 export function initializeFirebase(): { app: FirebaseApp | null; firestore: Firestore | null; auth: Auth | null } {
   // Check if we have a valid configuration to prevent SDK errors
-  const isPlaceholder = (val?: string) => !val || val.includes('YOUR_') || val === 'undefined' || val === '';
+  const isPlaceholder = (val?: string) => 
+    !val || 
+    val.includes('YOUR_') || 
+    val === 'undefined' || 
+    val === '' || 
+    val === 'null';
   
   const hasConfig = !isPlaceholder(firebaseConfig.apiKey);
   
   if (!hasConfig) {
-    if (typeof window !== 'undefined') {
-      console.warn("Firebase configuration is missing or contains placeholders. Please check your .env file.");
-    }
     return { app: null, firestore: null, auth: null };
   }
 
@@ -29,9 +30,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     const auth = getAuth(app);
     return { app, firestore, auth };
   } catch (error) {
-    if (typeof window !== 'undefined') {
-      console.error("Failed to initialize Firebase services. Check your API key and project permissions:", error);
-    }
+    // Return nulls instead of letting the entire app crash during initialization
     return { app: null, firestore: null, auth: null };
   }
 }
