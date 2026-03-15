@@ -10,16 +10,14 @@ import { firebaseConfig } from './config';
  * Returns null for services if the configuration is missing or invalid.
  */
 export function initializeFirebase(): { app: FirebaseApp | null; firestore: Firestore | null; auth: Auth | null } {
-  // Check if we have the minimum required configuration to prevent SDK errors
-  const hasConfig = !!(
-    firebaseConfig.apiKey && 
-    firebaseConfig.apiKey !== 'undefined' && 
-    firebaseConfig.apiKey !== ''
-  );
+  // Check if we have a valid configuration to prevent SDK errors
+  const isPlaceholder = (val?: string) => !val || val.includes('YOUR_') || val === 'undefined' || val === '';
+  
+  const hasConfig = !isPlaceholder(firebaseConfig.apiKey);
   
   if (!hasConfig) {
     if (typeof window !== 'undefined') {
-      console.warn("Firebase configuration is missing. Please update your .env file with your project's credentials.");
+      console.warn("Firebase configuration is missing or contains placeholders. Please update your .env file.");
     }
     return { app: null, firestore: null, auth: null };
   }
@@ -31,7 +29,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     return { app, firestore, auth };
   } catch (error) {
     if (typeof window !== 'undefined') {
-      console.error("Failed to initialize Firebase:", error);
+      console.error("Failed to initialize Firebase services:", error);
     }
     return { app: null, firestore: null, auth: null };
   }
