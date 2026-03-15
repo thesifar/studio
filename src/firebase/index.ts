@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -11,9 +10,8 @@ import { firebaseConfig } from './config';
  * Returns null for services if the configuration is missing or invalid.
  */
 export function initializeFirebase(): { app: FirebaseApp | null; firestore: Firestore | null; auth: Auth | null } {
-  // Check if we have a valid configuration to prevent SDK errors
-  // We're extra careful with key formats to avoid "invalid-api-key" crashes
-  const isValidKey = (val?: string) => 
+  // Robust check for placeholder or invalid configuration
+  const isValidValue = (val?: string) => 
     !!val && 
     val.length > 10 && 
     !val.includes('YOUR_') && 
@@ -21,10 +19,10 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     val !== 'null' &&
     val !== '';
   
-  const hasConfig = isValidKey(firebaseConfig.apiKey) && isValidKey(firebaseConfig.projectId);
+  const hasRequiredConfig = isValidValue(firebaseConfig.apiKey) && isValidValue(firebaseConfig.projectId);
   
-  if (!hasConfig) {
-    console.warn("Firebase configuration is missing or incomplete. Some features like submissions may be disabled.");
+  if (!hasRequiredConfig) {
+    // Return nulls to avoid SDK crash with bad credentials
     return { app: null, firestore: null, auth: null };
   }
 
@@ -34,7 +32,7 @@ export function initializeFirebase(): { app: FirebaseApp | null; firestore: Fire
     const auth = getAuth(app);
     return { app, firestore, auth };
   } catch (error) {
-    console.error("Firebase initialization failed:", error);
+    // Silently handle initialization errors in this context
     return { app: null, firestore: null, auth: null };
   }
 }
