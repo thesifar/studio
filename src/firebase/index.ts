@@ -6,6 +6,13 @@ import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
 
 export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; auth: Auth } {
+  // Check if configuration is valid before initializing
+  const isValidConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
+  
+  if (!isValidConfig) {
+    console.warn("Firebase configuration is missing. Ensure .env contains valid NEXT_PUBLIC_FIREBASE_* variables.");
+  }
+
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   const firestore = getFirestore(app);
   const auth = getAuth(app);

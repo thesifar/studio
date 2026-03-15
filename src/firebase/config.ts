@@ -2,8 +2,7 @@
 
 /**
  * The Firebase configuration object.
- * These values are typically populated from environment variables defined in .env
- * and provided by the Firebase Console.
+ * These values are populated from environment variables defined in .env
  */
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

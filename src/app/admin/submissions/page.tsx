@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from "@/components/ui/table";
@@ -23,13 +23,16 @@ export default function AdminSubmissionsPage() {
     setIsClient(true);
   }, []);
 
-  const submissionsQuery = query(
-    collection(db || ({} as any), 'submissions'),
-    where('status', '==', 'pending'),
-    orderBy('submittedAt', 'desc')
-  );
+  const submissionsQuery = useMemo(() => {
+    if (!db) return null;
+    return query(
+      collection(db, 'submissions'),
+      where('status', '==', 'pending'),
+      orderBy('submittedAt', 'desc')
+    );
+  }, [db]);
 
-  const { data: submissions, loading } = useCollection(db ? submissionsQuery : null);
+  const { data: submissions, loading } = useCollection(submissionsQuery);
 
   const handleApprove = async (id: string) => {
     if (!db) return;
@@ -39,7 +42,11 @@ export default function AdminSubmissionsPage() {
         toast({ title: "Approved", description: "Submission has been published." });
       })
       .catch(async () => {
-        const err = new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: { status: 'approved' } });
+        const err = new FirestorePermissionError({ 
+          path: docRef.path, 
+          operation: 'update', 
+          requestResourceData: { status: 'approved' } 
+        });
         errorEmitter.emit('permission-error', err);
       });
   };
@@ -52,14 +59,18 @@ export default function AdminSubmissionsPage() {
         toast({ title: "Rejected", description: "Submission has been removed.", variant: "destructive" });
       })
       .catch(async () => {
-        const err = new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: { status: 'rejected' } });
+        const err = new FirestorePermissionError({ 
+          path: docRef.path, 
+          operation: 'update', 
+          requestResourceData: { status: 'rejected' } 
+        });
         errorEmitter.emit('permission-error', err);
       });
   };
 
   const filtered = (submissions || []).filter(s => 
-    s.title.toLowerCase().includes(search.toLowerCase()) || 
-    s.artist.toLowerCase().includes(search.toLowerCase())
+    s.title?.toLowerCase().includes(search.toLowerCase()) || 
+    s.artist?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (!isClient) return null;
@@ -110,7 +121,7 @@ export default function AdminSubmissionsPage() {
                 </TableHeader>
                 <TableBody>
                   {filtered.length > 0 ? (
-                    filtered.map((sub) => (
+                    filtered.map((sub: any) => (
                       <TableRow key={sub.id} className="hover:bg-secondary/10 transition-colors">
                         <TableCell>
                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${sub.type === 'video' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
@@ -129,7 +140,7 @@ export default function AdminSubmissionsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
-                          {sub.submittedAt?.toDate ? sub.submittedAt.toDate().toLocaleDateString() : 'Pending...'}
+                          {sub.submittedAt?.toDate ? sub.submittedAt.toDate().toLocaleDateString() : 'Recent'}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
