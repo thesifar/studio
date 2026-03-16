@@ -17,10 +17,10 @@ export function initializeFirebase() {
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // More robust check for placeholder values
+      // Robust check for placeholder values
       const isPlaceholder = !firebaseConfig.apiKey || 
                            firebaseConfig.apiKey.includes('placeholder') || 
-                           firebaseConfig.apiKey === 'AIzaSy...';
+                           firebaseConfig.apiKey.length < 20;
                            
       if (isPlaceholder) {
         throw new Error('Invalid Firebase Config');

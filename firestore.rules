@@ -1,8 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // SECURITY RULES REFRESH
-    // Deployment Timestamp: 2024-03-25T16:45:00Z
+    // SECURITY RULES REFRESH - FORCED REDEPLOY
+    // Deployment Timestamp: 2025-03-25T18:30:00Z
     
     function isSignedIn() {
       return request.auth != null;
