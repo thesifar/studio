@@ -2,23 +2,28 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper functions for security rules
     function isSignedIn() {
       return request.auth != null;
     }
+    
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
+    // Public bhajans are readable by anyone, but writable only by admins
     match /bhajans/{bhajanId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Submissions can be created by anyone, but only viewed/managed by admins
     match /submissions/{submissionId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
 
+    // Admin role mapping - readable only by the owner, writable by other admins
     match /roles_admin/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow write: if isAdmin();

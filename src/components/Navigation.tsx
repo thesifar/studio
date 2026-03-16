@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -101,6 +102,7 @@ export function Navigation() {
               !isScrolled && isHome ? "bg-white/10 text-white border-white/20 hover:bg-white/20" : ""
             )}
             aria-label="Submit a new bhajan for approval"
+            suppressHydrationWarning
           >
             <Link href="/submit">
               <UploadCloud className="h-4 w-4" aria-hidden="true" />
@@ -115,6 +117,7 @@ export function Navigation() {
                placeholder="Find a bhajan..."
                aria-label="Search bhajans"
                className="h-10 w-40 xl:w-48 rounded-full border border-primary/20 bg-background/50 pl-10 pr-4 text-sm focus:w-64 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+               suppressHydrationWarning
              />
           </div>
           
@@ -123,7 +126,11 @@ export function Navigation() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-auto rounded-full p-1 gap-2 border border-primary/10 bg-secondary/20">
+                <Button 
+                  variant="ghost" 
+                  className="relative h-10 w-auto rounded-full p-1 gap-2 border border-primary/10 bg-secondary/20"
+                  suppressHydrationWarning
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">
@@ -164,7 +171,7 @@ export function Navigation() {
             <Button asChild variant="ghost" size="sm" className={cn(
               "rounded-full font-bold",
               !isScrolled && isHome ? "text-white hover:bg-white/10" : "text-primary"
-            )}>
+            )} suppressHydrationWarning>
               <Link href="/login">Login</Link>
             </Button>
           )}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePlaylist } from "@/context/PlaylistContext";
@@ -6,9 +7,17 @@ import { Button } from "@/components/ui/button";
 import { ListMusic, Trash2, Play, X, Music, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export function PlaylistQueue() {
   const { queue, removeFromQueue, clearQueue } = usePlaylist();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <Sheet>
@@ -16,6 +25,7 @@ export function PlaylistQueue() {
         <Button 
           className="relative gap-2 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 border-none h-10 px-5"
           aria-label={`View playlist queue, ${queue.length} items`}
+          suppressHydrationWarning
         >
           <ListMusic className="h-5 w-5" aria-hidden="true" />
           <span className="hidden md:inline">Queue</span>
@@ -43,6 +53,7 @@ export function PlaylistQueue() {
                 onClick={clearQueue} 
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 aria-label="Clear all items from queue"
+                suppressHydrationWarning
               >
                 Clear All
               </Button>
@@ -81,6 +92,7 @@ export function PlaylistQueue() {
                       className="h-8 w-8 rounded-full" 
                       asChild
                       aria-label={`Go to ${bhajan.title}`}
+                      suppressHydrationWarning
                     >
                       <Link href={`/bhajans/${bhajan.id}`}>
                         <Play className="h-4 w-4 text-primary fill-primary" aria-hidden="true" />
@@ -92,6 +104,7 @@ export function PlaylistQueue() {
                       className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" 
                       onClick={() => removeFromQueue(bhajan.id)}
                       aria-label={`Remove ${bhajan.title} from queue`}
+                      suppressHydrationWarning
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
                     </Button>
