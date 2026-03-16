@@ -10,16 +10,11 @@ export function initializeFirebase() {
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // Robust initialization with provided config
-      // Ensure API key is not a placeholder before initializing
-      if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('placeholder')) {
-        firebaseApp = initializeApp(firebaseConfig);
-      } else {
-        throw new Error('Placeholder API key detected');
-      }
+      // Direct initialization. The studio provides valid production config.
+      firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      console.warn('Firebase initialization failed or using placeholder.', e);
-      // Return a dummy initialization to prevent high-level crashes
+      console.warn('Firebase initialization failed. Falling back to dummy config for build.', e);
+      // Return a dummy initialization to prevent high-level crashes during build
       firebaseApp = initializeApp({
         apiKey: "AIzaSy_placeholder_key_for_build",
         authDomain: "placeholder.firebaseapp.com",

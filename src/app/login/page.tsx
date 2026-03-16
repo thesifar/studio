@@ -94,11 +94,11 @@ function LoginForm() {
             <Label htmlFor="email">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <input
+              <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="pl-10"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -113,11 +113,11 @@ function LoginForm() {
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <input
+              <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="pl-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -153,7 +153,7 @@ export default function LoginPage() {
           <span className="font-headline font-bold text-2xl text-primary">Bhajan Sangam</span>
         </Link>
 
-        <Suspense fallback={<div className="text-center py-10">Loading auth...</div>}>
+        <Suspense fallback={<div className="text-center py-20 bg-card/40 backdrop-blur-md rounded-2xl border border-primary/10">Loading authentication...</div>}>
           <LoginForm />
         </Suspense>
       </div>
