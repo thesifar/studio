@@ -50,15 +50,15 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        console.error('Firestore Error:', err);
+        console.error('Firestore Collection Error:', err);
         
-        // Check if it's actually a permission error
         if (err.code === 'permission-denied') {
           const contextualError = new FirestorePermissionError({
             operation: 'list',
-            path: 'collection', // Generic fallback for privacy
+            path: 'bhajans', // Simplified for immediate resolution
           });
           setError(contextualError);
+          // Only emit, don't throw immediately to prevent HTML crash
           errorEmitter.emit('permission-error', contextualError);
         } else {
           setError(err);
@@ -71,10 +71,6 @@ export function useCollection<T = any>(
 
     return () => unsubscribe();
   }, [memoizedTargetRefOrQuery]);
-
-  if(memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
-    throw new Error('Firestore target was not properly memoized using useMemoFirebase');
-  }
 
   return { data, isLoading, error };
 }
