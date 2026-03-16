@@ -2,26 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Core content collections are publicly readable for browsing and playback
+    // We use explicit 'read' to cover both 'get' and 'list' operations.
     
     match /bhajans/{bhajanId} {
-      // Explicitly allow both get and list for public browsing
-      allow get, list: if true;
-      allow create: if true; // Allow public submissions
+      allow read: if true;
+      allow create: if true; // Allow public submissions for the prototype
       allow update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
     match /artists/{artistId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
@@ -33,7 +33,7 @@ service cloud.firestore {
 
     match /submissions/{submissionId} {
       allow create: if true;
-      allow get, list, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
+      allow read, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /users/{userId} {
@@ -42,6 +42,6 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Deployment Fingerprint: 20240523-1845-EXPLICIT-LIST-READ
+    // Deployment Fingerprint: 20240523-1915-EXPLICIT-READ-SHORTHAND
   }
 }
