@@ -1,37 +1,38 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // SECURITY RULES REFRESH - FORCED REDEPLOY
-    // Deployment Timestamp: 2025-03-25T20:15:00Z
+    // SECURITY RULES REFRESH - FORCE REDEPLOY
+    // Unique Deployment ID: bhajan_sangam_v2_001
+    // Timestamp: 2025-03-25T21:10:00Z
     
     function isSignedIn() {
       return request.auth != null;
     }
     
     function isAdmin() {
-      // Ensure the roles_admin collection exists and contains the user's UID
+      // Check for admin role in the roles_admin collection
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    // Bhajans are publicly readable to allow all visitors to browse the collection
+    // Bhajans: Publicly readable for all visitors (get and list)
     match /bhajans/{bhajanId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Submissions can be created by anyone (visitors), but only viewed/managed by admins
+    // Submissions: Anyone can create (submit), but only admins can review
     match /submissions/{submissionId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
 
-    // Admin role mapping - readable only by the owner, writable by other admins
+    // Admin role check: Only the user can read their own admin status
     match /roles_admin/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow write: if isAdmin();
     }
     
-    // Default deny for everything else
+    // Default deny
     match /{path=**} {
       allow read, write: if false;
     }
