@@ -1,120 +1,46 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    /**
-     * Bhajan Sangam Security Rules
-     * 
-     * Core Philosophy:
-     * This ruleset implements a "Public Read, Admin Write" model. The application is designed for 
-     * broad accessibility of devotional content (Bhajans, Artists, Languages, Themes) while 
-     * strictly centralizing content management to authorized administrators.
-     * 
-     * Data Structure:
-     * - /bhajans/{bhajanId}: Metadata and media links for devotional songs.
-     * - /artists/{artistId}: Information about performers and creators.
-     * - /languages/{languageId}: Definitions for language categories.
-     * - /themes/{themeId}: Definitions for devotional themes/categories.
-     * - /admin_roles/{userId}: A marker collection where the existence of a document 
-     *   grants administrative write privileges to the corresponding user.
-     * 
-     * Key Security Decisions:
-     * - Public Access: Read operations (get and list) are allowed for all users, including 
-     *   anonymous users, to facilitate seamless browsing and playback.
-     * - Role-Based Access Control (RBAC): Write operations are protected by a global 
-     *   admin check against the /admin_roles collection.
-     * - Structural Segregation: Administrative markers are kept in a separate top-level 
-     *   collection to ensure clean authorization logic without polluting content documents.
-     * - Prototyping Flexibility: Rules focus on authorization and relational integrity 
-     *   (ID consistency) rather than strict field-level schema validation.
-     */
-
-    // --- Helper Functions ---
-
-    /** @description Checks if the request is from an authenticated user. */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /** @description Checks if the authenticated user has an entry in the admin_roles collection. */
+    // Shared helper for admin check
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
+      return request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
-    /** @description Verifies ownership or existence for destructive/modifying operations. */
-    function isExistingAdmin() {
-      return isAdmin() && resource != null;
-    }
-
-    // --- Collection Rules ---
-
-    /**
-     * @description Rules for the Bhajan collection. Publicly readable; Admin-only writes.
-     * @path /bhajans/{bhajanId}
-     * @allow (get) Any user requesting a specific bhajan.
-     * @deny (create) An authenticated non-admin user attempting to upload a new bhajan.
-     * @principle Role-based access control for content management.
-     */
+    // Bhajans: Publicly searchable and readable
     match /bhajans/{bhajanId} {
       allow get, list: if true;
-      allow create: if isAdmin() && (request.resource.data.id == bhajanId);
-      allow update: if isExistingAdmin() && (request.resource.data.id == resource.data.id);
-      allow delete: if isExistingAdmin();
+      allow create: if true; // Allow public submissions
+      allow update, delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for the Artist collection. Publicly readable; Admin-only writes.
-     * @path /artists/{artistId}
-     * @allow (list) An anonymous user browsing the artist directory.
-     * @deny (update) A user without an admin role attempting to edit artist bios.
-     * @principle Global public read with administrative write protection.
-     */
+    // Metadata Collections: Publicly readable for filtering
     match /artists/{artistId} {
       allow get, list: if true;
-      allow create: if isAdmin() && (request.resource.data.id == artistId);
-      allow update: if isExistingAdmin() && (request.resource.data.id == resource.data.id);
-      allow delete: if isExistingAdmin();
+      allow write: if isAdmin();
     }
-
-    /**
-     * @description Rules for the Language collection. Publicly readable; Admin-only writes.
-     * @path /languages/{languageId}
-     * @allow (get) Any user retrieving language definitions for filtering.
-     * @deny (delete) Any non-admin user trying to remove a language category.
-     * @principle Ensures administrative control over system-wide taxonomies.
-     */
+    
     match /languages/{languageId} {
       allow get, list: if true;
-      allow create: if isAdmin() && (request.resource.data.id == languageId);
-      allow update: if isExistingAdmin() && (request.resource.data.id == resource.data.id);
-      allow delete: if isExistingAdmin();
+      allow write: if isAdmin();
     }
-
-    /**
-     * @description Rules for the Theme collection. Publicly readable; Admin-only writes.
-     * @path /themes/{themeId}
-     * @allow (list) A user querying themes to discover new content.
-     * @deny (create) A standard user trying to add a new devotional category.
-     * @principle Validates that only authorized personnel can define content themes.
-     */
+    
     match /themes/{themeId} {
       allow get, list: if true;
-      allow create: if isAdmin() && (request.resource.data.id == themeId);
-      allow update: if isExistingAdmin() && (request.resource.data.id == resource.data.id);
-      allow delete: if isExistingAdmin();
+      allow write: if isAdmin();
     }
 
-    /**
-     * @description Rules for the Admin Roles marker collection.
-     * @path /admin_roles/{userId}
-     * @allow (get) An authenticated user checking if they themselves are an admin.
-     * @deny (list) A standard user trying to list all administrators.
-     * @principle Restricts administrative role management to existing admins.
-     */
+    // Admin Roles: Restricted access
     match /admin_roles/{userId} {
-      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
-      allow list: if isAdmin();
-      allow create, update, delete: if isAdmin();
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
     }
+
+    // Submissions: Public creation, admin management
+    match /submissions/{submissionId} {
+      allow create: if true;
+      allow get, list, update, delete: if isAdmin();
+    }
+    
+    // Deployment Fingerprint: 20240522-1645-EXPLICIT-LIST
   }
 }
