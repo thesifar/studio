@@ -50,18 +50,21 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        console.error('Firestore Collection Error:', err);
-        
         if (err.code === 'permission-denied') {
+          // Identify the path safely. 
+          const path = (memoizedTargetRefOrQuery as any).path || 'collection_query';
+          
           const contextualError = new FirestorePermissionError({
             operation: 'list',
-            path: 'bhajans', // Simplified for immediate resolution
+            path: path,
           });
+          
           setError(contextualError);
-          // Only emit, don't throw immediately to prevent HTML crash
           errorEmitter.emit('permission-error', contextualError);
         } else {
           setError(err);
+          // Manual console logging is permitted only for non-permission errors
+          console.error('Firestore Collection Error:', err);
         }
         
         setData(null);
