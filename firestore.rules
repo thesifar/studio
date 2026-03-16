@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Force re-deployment with this update: 2024-03-24T12:00:00Z
+    // Force re-deployment with this update: 2024-03-24T15:30:00Z
     
     function isSignedIn() {
       return request.auth != null;
@@ -28,6 +28,11 @@ service cloud.firestore {
     match /roles_admin/{userId} {
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow write: if isAdmin();
+    }
+    
+    // Default deny for everything else
+    match /{path=**} {
+      allow read, write: if false;
     }
   }
 }
