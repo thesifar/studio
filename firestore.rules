@@ -12,6 +12,7 @@ service cloud.firestore {
     }
 
     // Public bhajans are readable by anyone, but writable only by admins
+    // Note: Ensuring public read access for all visitors.
     match /bhajans/{bhajanId} {
       allow read: if true;
       allow write: if isAdmin();
