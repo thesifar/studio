@@ -1,27 +1,26 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Explicitly allow public read access to core content collections
-    // Separating 'get' and 'list' for maximum compatibility with all query types
+    // Core content collections are publicly readable for browsing and playback
     
     match /bhajans/{bhajanId} {
-      allow get, list: if true;
-      allow create: if true; // Allow user submissions
+      allow read: if true;
+      allow create: if true; // Allow public submissions
       allow update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
     match /artists/{artistId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
@@ -38,10 +37,10 @@ service cloud.firestore {
     
     match /users/{userId} {
       allow get: if request.auth != null && request.auth.uid == userId;
-      allow list: if false; // Users cannot list other users
+      allow list: if false;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Deployment Fingerprint: 20240523-1445-EXPLICIT-LIST-PERMS
+    // Deployment Fingerprint: 20240523-1615-EXPLICIT-READ-SHORTHAND
   }
 }
