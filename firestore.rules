@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Force re-deployment with this update: 2024-03-24T17:00:00Z
+    // Force re-deployment to ensure public access: 2024-03-24T18:00:00Z
     
     function isSignedIn() {
       return request.auth != null;
