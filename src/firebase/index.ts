@@ -17,17 +17,11 @@ export function initializeFirebase() {
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // Robust check for placeholder values
-      const isPlaceholder = !firebaseConfig.apiKey || 
-                           firebaseConfig.apiKey.includes('placeholder') || 
-                           firebaseConfig.apiKey.length < 20;
-                           
-      if (isPlaceholder) {
-        throw new Error('Invalid Firebase Config');
-      }
+      // Direct initialization with the provided config
+      // We rely on the config being correctly provided in config.ts
       firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      console.warn('Firebase initialization falling back to build-time safety config.', e);
+      console.warn('Firebase initialization error. Falling back to safety config.', e);
       // Fallback for build phase or missing env vars
       firebaseApp = initializeApp({
         apiKey: "AIzaSy_build_safe_placeholder",

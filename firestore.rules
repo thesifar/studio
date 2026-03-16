@@ -2,17 +2,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // SECURITY RULES REFRESH - FORCED REDEPLOY
-    // Deployment Timestamp: 2025-03-25T18:30:00Z
+    // Deployment Timestamp: 2025-03-25T20:15:00Z
     
     function isSignedIn() {
       return request.auth != null;
     }
     
     function isAdmin() {
+      // Ensure the roles_admin collection exists and contains the user's UID
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    // Bhajans are publicly readable to allow all visitors to browse
+    // Bhajans are publicly readable to allow all visitors to browse the collection
     match /bhajans/{bhajanId} {
       allow read: if true;
       allow write: if isAdmin();
