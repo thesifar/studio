@@ -1,4 +1,3 @@
-
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -11,16 +10,7 @@ export function initializeFirebase() {
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // Validate API key to prevent SDK crash
-      const isValidKey = firebaseConfig.apiKey && 
-                        firebaseConfig.apiKey !== "" && 
-                        !firebaseConfig.apiKey.includes("YOUR_API_KEY") &&
-                        !firebaseConfig.apiKey.includes("REPLACE_ME");
-
-      if (process.env.NODE_ENV === "production" && !isValidKey) {
-        console.warn("Firebase API Key is a placeholder. Using fallback.");
-      }
-
+      // Robust initialization with provided config
       firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
       console.warn('Firebase initialization failed.', e);
