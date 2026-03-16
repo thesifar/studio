@@ -59,12 +59,12 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 group text-lg" asChild suppressHydrationWarning>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 group text-lg" asChild>
                 <Link href="/bhajans" className="flex items-center gap-3">
                   Start Listening <Play className="h-5 w-5 fill-current" />
                 </Link>
               </Button>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 text-lg" asChild suppressHydrationWarning>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 h-16 rounded-full shadow-2xl shadow-primary/40 text-lg" asChild>
                 <Link href="/bhajans?type=video">Watch Collection</Link>
               </Button>
             </div>
@@ -80,7 +80,7 @@ export default function Home() {
                 </h2>
                 <p className="text-muted-foreground text-lg">Select a path that resonates with your heart.</p>
               </div>
-              <Button variant="ghost" className="text-primary font-bold hover:bg-primary/5 px-6 h-12 rounded-full transition-all" asChild suppressHydrationWarning>
+              <Button variant="ghost" className="text-primary font-bold hover:bg-primary/5 px-6 h-12 rounded-full transition-all" asChild>
                 <Link href="/bhajans" className="flex items-center gap-2">
                   View All <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -145,7 +145,7 @@ export default function Home() {
                     className="h-14 px-6 rounded-full border-none bg-white/20 backdrop-blur-lg text-white placeholder:text-white/60 w-full focus:ring-2 focus:ring-white/40 focus:outline-none transition-all"
                     suppressHydrationWarning
                   />
-                  <Button size="lg" className="rounded-full bg-white text-primary hover:bg-white/90 px-10 h-14 text-lg font-bold" suppressHydrationWarning>
+                  <Button size="lg" className="rounded-full bg-white text-primary hover:bg-white/90 px-10 h-14 text-lg font-bold">
                      Join Now
                   </Button>
                 </div>

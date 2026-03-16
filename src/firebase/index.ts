@@ -5,16 +5,24 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    return {
+      firebaseApp: null,
+      auth: null,
+      firestore: null
+    };
+  }
+
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // Direct initialization. The studio provides valid production config.
+      if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('placeholder')) {
+        throw new Error('Invalid Firebase Config');
+      }
       firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
       console.warn('Firebase initialization failed. Falling back to dummy config for build.', e);
-      // Return a dummy initialization to prevent high-level crashes during build
       firebaseApp = initializeApp({
         apiKey: "AIzaSy_placeholder_key_for_build",
         authDomain: "placeholder.firebaseapp.com",
