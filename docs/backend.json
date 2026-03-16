@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Bhajan": {
@@ -33,203 +34,69 @@
           "description": "The URL to a thumbnail image representing the bhajan.",
           "format": "uri"
         },
-        "artistId": {
+        "artist": {
           "type": "string",
-          "description": "Reference to the Artist who performed or created the bhajan. (Relationship: Artist 1:N Bhajan)"
+          "description": "The name of the artist/singer."
         },
-        "languageId": {
+        "category": {
           "type": "string",
-          "description": "Reference to the Language in which the bhajan is sung. (Relationship: Language 1:N Bhajan)"
+          "description": "The devotional theme or category."
         },
-        "devotionalThemeIds": {
+        "language": {
+          "type": "string",
+          "description": "The language of the bhajan."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["audio", "video"]
+        },
+        "duration": {
+          "type": "string",
+          "description": "The duration of the bhajan (MM:SS)."
+        },
+        "tags": {
           "type": "array",
-          "description": "References to Devotional Themes associated with the bhajan. (Relationship: DevotionalTheme N:N Bhajan)",
-          "items": {
-            "type": "string"
-          }
+          "items": { "type": "string" }
         },
-        "durationSeconds": {
-          "type": "number",
-          "description": "The duration of the bhajan in seconds."
-        },
-        "uploadDate": {
+        "createdAt": {
           "type": "string",
-          "description": "The date and time when the bhajan was uploaded to the system.",
           "format": "date-time"
         }
       },
-      "required": [
-        "id",
-        "title",
-        "description",
-        "artistId",
-        "languageId",
-        "uploadDate"
-      ]
+      "required": ["title", "artist", "type", "createdAt"]
     },
-    "Artist": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Artist",
+    "Submission": {
+      "title": "Submission",
       "type": "object",
-      "description": "Represents an artist or performer associated with one or more bhajans.",
+      "description": "A user-submitted bhajan awaiting review.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Artist entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The full name of the artist."
-        },
-        "bio": {
-          "type": "string",
-          "description": "A short biography or description of the artist."
-        },
-        "profileImageUrl": {
-          "type": "string",
-          "description": "The URL to the artist's profile image.",
-          "format": "uri"
-        }
-      },
-      "required": [
-        "id",
-        "name"
-      ]
-    },
-    "DevotionalTheme": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "DevotionalTheme",
-      "type": "object",
-      "description": "Represents a devotional theme or category under which bhajans are grouped.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the DevotionalTheme entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the devotional theme (e.g., 'Krishna Bhajans', 'Shiva Stutis')."
-        },
-        "description": {
-          "type": "string",
-          "description": "A brief description of the devotional theme."
-        }
-      },
-      "required": [
-        "id",
-        "name"
-      ]
-    },
-    "Language": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Language",
-      "type": "object",
-      "description": "Represents the language in which a bhajan is performed or sung.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Language entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the language (e.g., 'Hindi', 'Marathi', 'Sanskrit')."
-        }
-      },
-      "required": [
-        "id",
-        "name"
-      ]
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "category": { "type": "string" },
+        "language": { "type": "string" },
+        "type": { "type": "string", "enum": ["audio", "video"] },
+        "url": { "type": "string", "format": "uri" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "google"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/bhajans/{bhajanId}",
-        "definition": {
-          "entityName": "Bhajan",
-          "schema": {
-            "$ref": "#/backend/entities/Bhajan"
-          },
-          "description": "Stores individual bhajan records, including audio/video links and metadata. All documents in this collection are publicly readable by any user, and only writable by administrators.",
-          "params": [
-            {
-              "name": "bhajanId",
-              "description": "The unique identifier for a specific bhajan."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/artists/{artistId}",
-        "definition": {
-          "entityName": "Artist",
-          "schema": {
-            "$ref": "#/backend/entities/Artist"
-          },
-          "description": "Contains details about artists and performers. These documents are publicly readable and only writable by administrators.",
-          "params": [
-            {
-              "name": "artistId",
-              "description": "The unique identifier for a specific artist."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/devotionalThemes/{themeId}",
-        "definition": {
-          "entityName": "DevotionalTheme",
-          "schema": {
-            "$ref": "#/backend/entities/DevotionalTheme"
-          },
-          "description": "Holds definitions for devotional themes used to categorize bhajans. These documents are publicly readable and only writable by administrators.",
-          "params": [
-            {
-              "name": "themeId",
-              "description": "The unique identifier for a specific devotional theme."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/languages/{languageId}",
-        "definition": {
-          "entityName": "Language",
-          "schema": {
-            "$ref": "#/backend/entities/Language"
-          },
-          "description": "Defines the languages in which bhajans are sung. These documents are publicly readable and only writable by administrators.",
-          "params": [
-            {
-              "name": "languageId",
-              "description": "The unique identifier for a specific language."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "UserRole",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "A dedicated collection for Database Access Control (DBAC). The existence of a document at this path indicates that the corresponding userId is an administrator. This is used for authorization independence, allowing admin checks without hierarchical dependencies or custom claims. Documents are only readable by the owner (the admin user themselves) for verification, and only writable/deletable by existing administrators.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user who is an administrator."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure for Bhajan Sangam prioritizes robust security rules, scalability, and debuggability by strictly adhering to the core design principles. All primary content collections (Bhajans, Artists, DevotionalThemes, Languages) are designed for public read access while restricting write operations exclusively to authenticated administrators. This approach simplifies security rules significantly as a 'list' operation on these collections does not require filtering based on user permissions – all documents are universally readable. Authorization Independence is critically maintained by avoiding hierarchical authorization dependencies. Instead of relying on `get()` calls to parent documents for permission checks, administrative access is managed through a dedicated top-level collection: `/roles_admin/{userId}`. This collection stores the UIDs of users designated as administrators. A user's administrative status is determined by the existence of a document corresponding to their `request.auth.uid` in this collection, allowing for atomic and independent authorization checks. This design ensures that security rules are clear, explicit, and do not introduce performance bottlenecks or complexity associated with fetching parent data during operations."
+    "/bhajans/{bhajanId}": {
+      "schema": "Bhajan",
+      "description": "Publicly readable collection of verified bhajans."
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "User submissions awaiting admin approval."
+    },
+    "/roles_admin/{userId}": {
+      "schema": "object",
+      "description": "Admin privileges mapping."
+    }
   }
 }

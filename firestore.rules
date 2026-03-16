@@ -1,127 +1,27 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    /**
-     * BHAJAN SANGAM - SECURITY RULES CONFIGURATION
-     * 
-     * Core Philosophy:
-     * This ruleset implements a centralized administrative control model. Content 
-     * (Bhajans, Artists, Themes, Languages) is globally accessible for discovery 
-     * but strictly protected against unauthorized modifications.
-     * 
-     * Data Structure:
-     * - Public Content: Top-level collections (/bhajans, /artists, etc.) available for public read.
-     * - RBAC System: A dedicated /roles_admin collection that defines the administrative tier.
-     * 
-     * Key Security Decisions:
-     * - Authorization Independence: Admin status is determined by the existence of a document 
-     *   in the /roles_admin collection matching the user's UID. This avoids complex 
-     *   hierarchical lookups or reliance on external custom claims.
-     * - Prototyping Flexibility: While authorization is strictly enforced (who can write), 
-     *   the specific shape and data types of the content are not restricted to allow 
-     *   for rapid schema evolution.
-     * - Recursive Admin Control: Only existing administrators can grant or revoke 
-     *   administrative privileges to others.
-     */
-
-    // --- Helper Functions ---
-
-    /** @description Checks if the user is authenticated with Firebase Auth. */
     function isSignedIn() {
       return request.auth != null;
     }
-
-    /** @description Checks if the authenticated user's UID matches the provided userId. */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /** 
-     * @description Checks if the user is an administrator by verifying the existence 
-     * of their UID in the roles_admin collection. 
-     */
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    /** @description Verifies ownership and document existence for state-changing operations. */
-    function isExistingAdmin() {
-      return isAdmin() && resource != null;
-    }
-
-    // --- Collection Rules ---
-
-    /**
-     * @description Rules for the primary Bhajan content.
-     * @path /bhajans/{bhajanId}
-     * @allow (get, list) If anyone (authenticated or anonymous) requests content.
-     * @allow (create, update, delete) If the user is an authenticated administrator.
-     * @deny (write) If the user is not an administrator.
-     * @principle Public Read with Admin-Only Writes.
-     */
     match /bhajans/{bhajanId} {
-      allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == bhajanId;
-      allow update, delete: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    /**
-     * @description Rules for Artist metadata.
-     * @path /artists/{artistId}
-     * @allow (get, list) If anyone requests artist details.
-     * @allow (create, update, delete) If the user is an administrator.
-     * @deny (write) If the user is not an administrator.
-     * @principle Public Read with Admin-Only Writes.
-     */
-    match /artists/{artistId} {
-      allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == artistId;
-      allow update, delete: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+    match /submissions/{submissionId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for Devotional Themes (categories).
-     * @path /devotionalThemes/{themeId}
-     * @allow (get, list) If anyone requests theme definitions.
-     * @allow (create, update, delete) If the user is an administrator.
-     * @deny (write) If the user is not an administrator.
-     * @principle Public Read with Admin-Only Writes.
-     */
-    match /devotionalThemes/{themeId} {
-      allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == themeId;
-      allow update, delete: if isExistingAdmin() && request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * @description Rules for Language definitions.
-     * @path /languages/{languageId}
-     * @allow (get, list) If anyone requests language options.
-     * @allow (create, update, delete) If the user is an administrator.
-     * @deny (write) If the user is not an administrator.
-     * @principle Public Read with Admin-Only Writes.
-     */
-    match /languages/{languageId} {
-      allow get, list: if true;
-      allow create: if isAdmin() && request.resource.data.id == languageId;
-      allow update, delete: if isExistingAdmin() && request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * @description Rules for Database Access Control (DBAC).
-     * @path /roles_admin/{userId}
-     * @allow (get) If the user is checking their own administrative status.
-     * @allow (list) If the user is an administrator (for auditing/management).
-     * @allow (create, update, delete) If the user is an existing administrator.
-     * @deny (get) If a user tries to check another user's admin status directly.
-     * @principle Restricted Role Management with Admin-only Mutation.
-     */
     match /roles_admin/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if isAdmin();
-      // Only an existing administrator can create/edit/remove other admin records.
-      allow create, update, delete: if isAdmin();
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if isAdmin();
     }
   }
 }
