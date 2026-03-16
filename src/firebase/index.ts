@@ -17,17 +17,23 @@ export function initializeFirebase() {
   if (!getApps().length) {
     let firebaseApp;
     try {
-      if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('placeholder')) {
+      // More robust check for placeholder values
+      const isPlaceholder = !firebaseConfig.apiKey || 
+                           firebaseConfig.apiKey.includes('placeholder') || 
+                           firebaseConfig.apiKey === 'AIzaSy...';
+                           
+      if (isPlaceholder) {
         throw new Error('Invalid Firebase Config');
       }
       firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      console.warn('Firebase initialization failed. Falling back to dummy config for build.', e);
+      console.warn('Firebase initialization falling back to build-time safety config.', e);
+      // Fallback for build phase or missing env vars
       firebaseApp = initializeApp({
-        apiKey: "AIzaSy_placeholder_key_for_build",
-        authDomain: "placeholder.firebaseapp.com",
-        projectId: "placeholder-project",
-        appId: "1:123456789:web:placeholder"
+        apiKey: "AIzaSy_build_safe_placeholder",
+        authDomain: "safe-build.firebaseapp.com",
+        projectId: "safe-build-project",
+        appId: "1:123456789:web:safe"
       });
     }
 
