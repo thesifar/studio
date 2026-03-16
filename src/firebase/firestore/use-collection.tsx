@@ -20,6 +20,17 @@ export interface UseCollectionResult<T> {
   error: FirestoreError | Error | null;
 }
 
+/**
+ * Internal interface to access the private _query property safely for debugging.
+ */
+interface InternalQuery {
+  _query: {
+    path: {
+      canonicalString: () => string;
+    };
+  };
+}
+
 export function useCollection<T = any>(
     memoizedTargetRefOrQuery: ((CollectionReference<DocumentData> | Query<DocumentData>) & {__memo?: boolean})  | null | undefined,
 ): UseCollectionResult<T> {
@@ -51,8 +62,13 @@ export function useCollection<T = any>(
       },
       (err: FirestoreError) => {
         if (err.code === 'permission-denied') {
-          // Identify the path safely. 
-          const path = (memoizedTargetRefOrQuery as any).path || 'collection_query';
+          // Robustly attempt to resolve the path for debugging context
+          const q = memoizedTargetRefOrQuery as any;
+          const path = q.path 
+            ? q.path 
+            : (q._query?.path?.canonicalString 
+                ? q._query.path.canonicalString() 
+                : 'collection_query');
           
           const contextualError = new FirestorePermissionError({
             operation: 'list',
