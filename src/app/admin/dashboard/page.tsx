@@ -1,20 +1,63 @@
 "use client";
 
+import { useState } from "react";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Music, Video, Users, TrendingUp, PlusCircle, Settings } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Music, Video, Users, TrendingUp, PlusCircle, Settings, Database, Loader2, Sparkles } from "lucide-react";
 import { BHAJANS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp, getDocs, query, limit } from "firebase/firestore";
+import { toast } from "@/hooks/use-toast";
 
 export default function AdminDashboardPage() {
+  const db = useFirestore();
+  const [seeding, setSeeding] = useState(false);
+
   const stats = [
     { label: "Total Bhajans", value: BHAJANS.length, icon: Music, color: "text-blue-500" },
     { label: "Video Streams", value: BHAJANS.filter(b => b.type === 'video').length, icon: Video, color: "text-orange-500" },
     { label: "Active Listeners", value: "1,284", icon: Users, color: "text-green-500" },
     { label: "Avg. Daily Play", value: "458h", icon: TrendingUp, color: "text-purple-500" },
   ];
+
+  const handleSeedData = async () => {
+    if (!db) {
+      toast({ title: "Database Error", description: "Firestore is not initialized.", variant: "destructive" });
+      return;
+    }
+
+    setSeeding(true);
+    try {
+      // Check if data already exists to avoid duplicates
+      const q = query(collection(db, "bhajans"), limit(1));
+      const snap = await getDocs(q);
+      
+      if (!snap.empty) {
+        toast({ title: "Sanctuary Populated", description: "The database already contains bhajan data." });
+        setSeeding(false);
+        return;
+      }
+
+      // Populate using mock data
+      const bhajansRef = collection(db, "bhajans");
+      BHAJANS.forEach((bhajan) => {
+        const { id, ...data } = bhajan;
+        addDoc(bhajansRef, {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
+      });
+
+      toast({ title: "Blessings Received!", description: "Successfully seeded sample bhajans into the collection." });
+    } catch (err: any) {
+      toast({ title: "Seeding Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -25,12 +68,23 @@ export default function AdminDashboardPage() {
             <SidebarTrigger />
             <h1 className="font-headline text-2xl font-bold">Overview</h1>
           </div>
-          <Button asChild className="bg-primary hover:bg-primary/90 rounded-full">
-            <Link href="/admin/bhajans/new" className="flex items-center gap-2">
-              <PlusCircle className="h-4 w-4" />
-              <span>Add Bhajan</span>
-            </Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              className="rounded-full gap-2 border-primary/20 text-primary hover:bg-primary/5"
+              onClick={handleSeedData}
+              disabled={seeding}
+            >
+              {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+              <span>Seed Sample Data</span>
+            </Button>
+            <Button asChild className="bg-primary hover:bg-primary/90 rounded-full">
+              <Link href="/admin/bhajans/new" className="flex items-center gap-2">
+                <PlusCircle className="h-4 w-4" />
+                <span>Add Bhajan</span>
+              </Link>
+            </Button>
+          </div>
         </header>
 
         <main className="p-6 space-y-8">
@@ -115,15 +169,21 @@ export default function AdminDashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-sm">
+              <Card className="border-none shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-2 bg-accent/10 rounded-bl-xl text-[8px] font-bold text-accent uppercase tracking-tighter">Prototype Helper</div>
                 <CardHeader>
-                  <CardTitle className="font-headline text-xl">Quick Links</CardTitle>
+                  <CardTitle className="font-headline text-xl">Quick Setup</CardTitle>
+                  <CardDescription>Populate your local sanctuary</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
-                  <Button variant="outline" className="justify-start gap-2 h-11" asChild>
-                    <Link href="/admin/bhajans/new">
-                      <PlusCircle className="h-4 w-4" /> Add Content
-                    </Link>
+                  <Button 
+                    variant="outline" 
+                    className="justify-start gap-2 h-11 border-accent/20 hover:bg-accent/5 text-accent font-semibold" 
+                    onClick={handleSeedData}
+                    disabled={seeding}
+                  >
+                    {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                    Seed Sample Collection
                   </Button>
                   <Button variant="outline" className="justify-start gap-2 h-11" asChild>
                     <Link href="/admin/settings">
