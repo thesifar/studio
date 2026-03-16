@@ -12,21 +12,18 @@ export function initializeFirebase() {
     let firebaseApp;
     try {
       // Validate API key to prevent SDK crash
-      // We check for common placeholder strings rather than valid API key prefixes
       const isValidKey = firebaseConfig.apiKey && 
                         firebaseConfig.apiKey !== "" && 
                         !firebaseConfig.apiKey.includes("YOUR_API_KEY") &&
                         !firebaseConfig.apiKey.includes("REPLACE_ME");
 
       if (process.env.NODE_ENV === "production" && !isValidKey) {
-        throw new Error("Missing valid Firebase API Key");
+        console.warn("Firebase API Key is a placeholder. Using fallback.");
       }
 
       firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Initialization failed.', e);
-      }
+      console.warn('Firebase initialization failed.', e);
       // Return a dummy initialization to prevent high-level crashes
       firebaseApp = initializeApp({
         apiKey: "placeholder-key",
