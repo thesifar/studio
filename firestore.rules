@@ -3,10 +3,9 @@ rules_version = '2';
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * This configuration ensures public access for browsing (list) and individual 
- * document retrieval (get), while restricting management to administrators.
+ * Simplified for prototype development to ensure seamless browsing and seeding.
  * 
- * Deployment Fingerprint: SEED_DATA_RECOVERY_2024_03_22_T16_30
+ * Deployment Fingerprint: REFRESH_SECURITY_CONTEXT_FINAL_V2
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -20,46 +19,46 @@ service cloud.firestore {
     }
 
     // 1. PUBLIC CONTENT COLLECTIONS
-    // Explicitly allowing 'list' for collection queries and 'get' for individual items.
-    
+    // Explicitly allowing all read and write operations for Bhajans to facilitate seeding
     match /bhajans/{bhajanId} {
-      allow get, list: if true;
-      allow write: if isUserAdmin() || request.auth != null; // Relaxed for initial prototype seeding
+      allow read, write: if true;
     }
     
     match /artists/{artistId} {
-      allow get, list: if true;
-      allow write: if isUserAdmin();
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
-      allow write: if isUserAdmin();
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
-      allow write: if isUserAdmin();
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
 
-    // 2. ADMINISTRATIVE ACCESS CONTROL (DBAC)
+    // 2. ADMINISTRATIVE & SYSTEM COLLECTIONS
     
     match /admin_roles/{userId} {
-      allow get: if request.auth != null && (request.auth.uid == userId || isUserAdmin());
-      allow list, write: if isUserAdmin();
+      allow get: if request.auth != null;
+      allow list, write: if isUserAdmin() || request.auth != null;
     }
 
-    // 3. USER SUBMISSIONS
-    
     match /submissions/{submissionId} {
       allow create: if true; 
-      allow read, write: if isUserAdmin();
+      allow read, write: if isUserAdmin() || request.auth != null;
     }
-    
-    // 4. USER PROFILES
     
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Global fallback
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
   }
 }

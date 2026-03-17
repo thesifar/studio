@@ -9,7 +9,7 @@ import { BHAJANS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp, getDocs, query, limit } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 export default function AdminDashboardPage() {
@@ -25,15 +25,19 @@ export default function AdminDashboardPage() {
 
   const handleSeedData = async () => {
     if (!db) {
-      toast({ title: "Database Error", description: "Firestore is not initialized. Please try again in a moment.", variant: "destructive" });
+      toast({ 
+        title: "Database Error", 
+        description: "Firestore is not initialized. Please try again in a moment.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     setSeeding(true);
     try {
-      // Direct seeding without pre-check to bypass potential 'list' permission propagation delay
       const bhajansRef = collection(db, "bhajans");
       
+      // Seed the database with mock data items one by one
       const seedPromises = BHAJANS.map((bhajan) => {
         const { id, ...data } = bhajan;
         return addDoc(bhajansRef, {
@@ -44,12 +48,15 @@ export default function AdminDashboardPage() {
 
       await Promise.all(seedPromises);
 
-      toast({ title: "Blessings Received!", description: "Successfully seeded your spiritual collection." });
+      toast({ 
+        title: "Blessings Received!", 
+        description: "Successfully seeded your spiritual collection in the database." 
+      });
     } catch (err: any) {
       console.error("Seeding failed:", err);
       toast({ 
         title: "Seeding Error", 
-        description: err.message || "Failed to seed data. Ensure you are logged in.", 
+        description: err.message || "Failed to seed data. Security rules might be propagating.", 
         variant: "destructive" 
       });
     } finally {
@@ -110,8 +117,10 @@ export default function AdminDashboardPage() {
                   {BHAJANS.slice(0, 5).map((bhajan) => (
                     <div key={bhajan.id} className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 rounded-lg overflow-hidden shrink-0">
-                          <img src={bhajan.thumbnail} alt={bhajan.title} className="object-cover w-full h-full" />
+                        <div className="relative h-12 w-12 rounded-lg overflow-hidden shrink-0 bg-muted">
+                          {bhajan.thumbnail && (
+                            <img src={bhajan.thumbnail} alt={bhajan.title} className="object-cover w-full h-full" />
+                          )}
                         </div>
                         <div>
                           <p className="font-semibold text-sm line-clamp-1">{bhajan.title}</p>
