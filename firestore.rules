@@ -4,7 +4,9 @@ rules_version = '2';
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * Deployment Fingerprint: BHAJAN_EXPLICIT_READ_V105
+ * Deployment Fingerprint: BHAJAN_SEEDING_PERMISSIVE_V201
+ * This configuration allows public writes to the bhajans collection 
+ * specifically to facilitate prototype seeding and testing.
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -18,37 +20,37 @@ service cloud.firestore {
     }
 
     // 1. BHAJANS COLLECTION
+    // Permissive read and write for the prototype/seeding phase
     match /bhajans/{bhajanId} {
-      allow get: if true;
-      allow list: if true;
-      allow write: if true; // Open for seeding; restrict to isUserAdmin() for production
+      allow read: if true;
+      allow write: if true; 
     }
     
     // 2. OTHER CONTENT COLLECTIONS
     match /artists/{artistId} {
-      allow get, list: if true;
-      allow write: if request.auth != null;
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
-      allow write: if request.auth != null;
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
-      allow write: if request.auth != null;
+      allow read: if true;
+      allow write: if isUserAdmin() || request.auth != null;
     }
 
     // 3. ADMINISTRATIVE & SYSTEM COLLECTIONS
     match /admin_roles/{userId} {
-      allow get: if request.auth != null;
-      allow list, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow write: if isUserAdmin();
     }
 
     match /submissions/{submissionId} {
       allow create: if true; 
-      allow read, write: if request.auth != null;
+      allow read, write: if isUserAdmin() || request.auth != null;
     }
     
     match /users/{userId} {
@@ -57,8 +59,8 @@ service cloud.firestore {
 
     // Global fallback
     match /{document=**} {
-      allow get, list: if true;
-      allow write: if request.auth != null;
+      allow read: if true;
+      allow write: if request.auth != null || isUserAdmin();
     }
   }
 }
