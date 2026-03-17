@@ -2,10 +2,9 @@ rules_version = '2';
 
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
- * REFRESH V4 - EXPLICIT PUBLIC READ ACCESS
+ * REFRESH V6 - CONSOLIDATED PUBLIC READ
  * 
- * This ruleset explicitly separates 'get' and 'list' operations to ensure
- * unauthenticated users can browse the collection without permission errors.
+ * Deployment Refresh Token: 2024-03-21T10:45:00Z
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -16,27 +15,25 @@ service cloud.firestore {
     }
 
     // 1. PUBLIC CONTENT COLLECTIONS
-    // These matches apply to both document gets and collection lists.
+    // 'read' covers both 'get' (single doc) and 'list' (queries/collection lists)
     
     match /bhajans/{bhajanId} {
-      // Explicitly allow public reading (browsing and viewing)
-      allow get, list: if true;
-      // Writing is reserved for administrators
-      allow create, update, delete: if isUserAdmin();
+      allow read: if true;
+      allow write: if isUserAdmin();
     }
     
     match /artists/{artistId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
 
@@ -48,18 +45,16 @@ service cloud.firestore {
     }
 
     // 3. USER SUBMISSIONS
-    // Allow public creation (submissions) but private review.
     
     match /submissions/{submissionId} {
       allow create: if true; 
-      allow get, list, update, delete: if isUserAdmin();
+      allow read, write: if isUserAdmin();
     }
     
     // 4. USER PROFILES
     
     match /users/{userId} {
       allow get: if request.auth != null && request.auth.uid == userId;
-      allow list: if false;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
