@@ -6,7 +6,7 @@ rules_version = '2';
  * This ruleset implements public read access for devotional content (bhajans, artists, etc.)
  * while restricting management operations to administrators identified via the admin_roles collection.
  * 
- * Deployment Hash: 20240523-2200-FINAL-PUBLIC-LIST-FIX
+ * Deployment Hash: 20240523-2315-REFRESH-PUBLIC-READ
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -15,23 +15,24 @@ service cloud.firestore {
     // Everyone (including unauthenticated users) can browse and view content.
     
     match /bhajans/{bhajanId} {
-      allow get, list: if true;
-      allow create: if true; 
-      allow update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
+      // 'read' shorthand covers both 'get' and 'list'
+      allow read: if true;
+      // Write operations are strictly for administrators
+      allow create, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /artists/{artistId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
@@ -46,7 +47,7 @@ service cloud.firestore {
     // 3. USER SUBMISSIONS
     
     match /submissions/{submissionId} {
-      allow create: if true; // Allow anonymous contributions
+      allow create: if true; // Allow anonymous contributions for public submissions
       allow get, list, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
     
