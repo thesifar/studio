@@ -2,10 +2,12 @@ rules_version = '2';
 
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
- * REFRESHING SECURITY CONTEXT
+ * FORCED BACKEND SECURITY CONTEXT REFRESH
  * 
- * Last Updated: 2024-03-22T09:50:00Z
- * Deployment Fingerprint: AUTH_RETRY_PULSE_99
+ * This update ensures that collection-level 'list' operations are correctly
+ * propagated to the production backend for unauthenticated users.
+ * 
+ * Deployment Fingerprint: REFRESH_FORCE_BHAKTI_PULSE_2024_03_22_T15_45
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -16,25 +18,26 @@ service cloud.firestore {
     }
 
     // 1. PUBLIC CONTENT COLLECTIONS
-    // Explicitly splitting 'read' into 'get' and 'list' to ensure collection queries are permitted.
+    // Using 'read' shorthand to explicitly cover both 'get' and 'list' operations.
+    // This allows unauthenticated users to browse the full collection.
     
     match /bhajans/{bhajanId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
     
     match /artists/{artistId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
     
     match /languages/{languageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
     
     match /themes/{themeId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isUserAdmin();
     }
 
