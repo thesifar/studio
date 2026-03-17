@@ -1,13 +1,14 @@
+
 rules_version = '2';
 
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * Deployment Fingerprint: BHAJAN_FORCE_REFRESH_V506
- * Security Context Refresh: 2024-03-20T17:15:00Z
+ * Deployment Fingerprint: BHAJAN_FORCE_REFRESH_V992
+ * Security Context Refresh: 2024-03-21T10:30:00Z
  * 
- * This configuration allows public writes to the bhajans collection 
- * specifically to facilitate prototype seeding and testing.
+ * This configuration allows public reads to the bhajans collection 
+ * and explicit public creates for the seeding process.
  */
 service cloud.firestore {
   match /databases/{database}/documents {
