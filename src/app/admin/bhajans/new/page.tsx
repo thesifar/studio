@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -16,9 +17,14 @@ import { generateBhajanDescription } from "@/ai/flows/admin-bhajan-description-g
 import { adminBhajanTagSuggestion } from "@/ai/flows/admin-bhajan-tag-suggestion-flow";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AddBhajanPage() {
   const router = useRouter();
+  const db = useFirestore();
   const [loading, setLoading] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
   
@@ -101,12 +107,30 @@ export default function AddBhajanPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
+    
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast({ title: "Success", description: "New bhajan has been added to the collection." });
-      router.push("/admin/bhajans");
-    }, 1500);
+    const bhajansRef = collection(db, "bhajans");
+    const docData = {
+      ...formData,
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(bhajansRef, docData)
+      .then(() => {
+        setLoading(false);
+        toast({ title: "Success", description: "New bhajan has been added to the collection." });
+        router.push("/admin/bhajans");
+      })
+      .catch(async (serverError) => {
+        setLoading(false);
+        const permissionError = new FirestorePermissionError({
+          path: bhajansRef.path,
+          operation: 'create',
+          requestResourceData: docData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   return (

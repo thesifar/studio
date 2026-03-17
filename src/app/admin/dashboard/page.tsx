@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,8 @@ import Link from "next/link";
 import { useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AdminDashboardPage() {
   const db = useFirestore();
@@ -23,7 +26,7 @@ export default function AdminDashboardPage() {
     { label: "Avg. Daily Play", value: "458h", icon: TrendingUp, color: "text-purple-500" },
   ];
 
-  const handleSeedData = async () => {
+  const handleSeedData = () => {
     if (!db) {
       toast({ 
         title: "Database Error", 
@@ -34,34 +37,38 @@ export default function AdminDashboardPage() {
     }
 
     setSeeding(true);
-    try {
-      const bhajansRef = collection(db, "bhajans");
-      
-      // Seed the database with mock data items one by one
-      const seedPromises = BHAJANS.map((bhajan) => {
-        const { id, ...data } = bhajan;
-        return addDoc(bhajansRef, {
-          ...data,
-          createdAt: serverTimestamp(),
+    const bhajansRef = collection(db, "bhajans");
+    let successCount = 0;
+    const totalToSeed = BHAJANS.length;
+
+    BHAJANS.forEach((bhajan) => {
+      const { id, ...data } = bhajan;
+      const docData = {
+        ...data,
+        createdAt: serverTimestamp(),
+      };
+
+      addDoc(bhajansRef, docData)
+        .then(() => {
+          successCount++;
+          if (successCount === totalToSeed) {
+            toast({ 
+              title: "Blessings Received!", 
+              description: "Successfully seeded your spiritual collection." 
+            });
+            setSeeding(false);
+          }
+        })
+        .catch(async (serverError) => {
+          const permissionError = new FirestorePermissionError({
+            path: bhajansRef.path,
+            operation: 'create',
+            requestResourceData: docData,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+          setSeeding(false);
         });
-      });
-
-      await Promise.all(seedPromises);
-
-      toast({ 
-        title: "Blessings Received!", 
-        description: "Successfully seeded your spiritual collection in the database." 
-      });
-    } catch (err: any) {
-      console.error("Seeding failed:", err);
-      toast({ 
-        title: "Seeding Error", 
-        description: err.message || "Failed to seed data. Security rules might be propagating.", 
-        variant: "destructive" 
-      });
-    } finally {
-      setSeeding(false);
-    }
+    });
   };
 
   return (
