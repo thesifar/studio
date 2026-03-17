@@ -25,35 +25,33 @@ export default function AdminDashboardPage() {
 
   const handleSeedData = async () => {
     if (!db) {
-      toast({ title: "Database Error", description: "Firestore is not initialized.", variant: "destructive" });
+      toast({ title: "Database Error", description: "Firestore is not initialized. Please try again in a moment.", variant: "destructive" });
       return;
     }
 
     setSeeding(true);
     try {
-      // Check if data already exists to avoid duplicates
-      const q = query(collection(db, "bhajans"), limit(1));
-      const snap = await getDocs(q);
-      
-      if (!snap.empty) {
-        toast({ title: "Sanctuary Populated", description: "The database already contains bhajan data." });
-        setSeeding(false);
-        return;
-      }
-
-      // Populate using mock data
+      // Direct seeding without pre-check to bypass potential 'list' permission propagation delay
       const bhajansRef = collection(db, "bhajans");
-      BHAJANS.forEach((bhajan) => {
+      
+      const seedPromises = BHAJANS.map((bhajan) => {
         const { id, ...data } = bhajan;
-        addDoc(bhajansRef, {
+        return addDoc(bhajansRef, {
           ...data,
           createdAt: serverTimestamp(),
         });
       });
 
-      toast({ title: "Blessings Received!", description: "Successfully seeded sample bhajans into the collection." });
+      await Promise.all(seedPromises);
+
+      toast({ title: "Blessings Received!", description: "Successfully seeded your spiritual collection." });
     } catch (err: any) {
-      toast({ title: "Seeding Error", description: err.message, variant: "destructive" });
+      console.error("Seeding failed:", err);
+      toast({ 
+        title: "Seeding Error", 
+        description: err.message || "Failed to seed data. Ensure you are logged in.", 
+        variant: "destructive" 
+      });
     } finally {
       setSeeding(false);
     }
@@ -88,7 +86,6 @@ export default function AdminDashboardPage() {
         </header>
 
         <main className="p-6 space-y-8">
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat) => (
               <Card key={stat.label} className="border-none shadow-sm">
@@ -104,7 +101,6 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Recent Content */}
             <Card className="lg:col-span-2 border-none shadow-sm">
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Recent Submissions</CardTitle>
@@ -139,7 +135,6 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
             <div className="space-y-6">
               <Card className="border-none shadow-sm bg-primary/5 border border-primary/10">
                 <CardHeader>
@@ -156,15 +151,6 @@ export default function AdminDashboardPage() {
                          <div className="h-full bg-primary w-[64%]" />
                        </div>
                     </div>
-                    <div className="space-y-2">
-                       <div className="flex justify-between text-sm">
-                         <span>Bandwidth Usage</span>
-                         <span className="font-medium">28%</span>
-                       </div>
-                       <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                         <div className="h-full bg-accent w-[28%]" />
-                       </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -173,7 +159,7 @@ export default function AdminDashboardPage() {
                 <div className="absolute top-0 right-0 p-2 bg-accent/10 rounded-bl-xl text-[8px] font-bold text-accent uppercase tracking-tighter">Prototype Helper</div>
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Quick Setup</CardTitle>
-                  <CardDescription>Populate your local sanctuary</CardDescription>
+                  <CardDescription>Populate your sanctuary with one click</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
                   <Button 
