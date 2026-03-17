@@ -1,10 +1,11 @@
-
 rules_version = '2';
 
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * Deployment Fingerprint: BHAJAN_SEEDING_PERMISSIVE_V201
+ * Deployment Fingerprint: BHAJAN_FORCE_REFRESH_V505
+ * Security Context Refresh: 2024-03-20T16:45:00Z
+ * 
  * This configuration allows public writes to the bhajans collection 
  * specifically to facilitate prototype seeding and testing.
  */
@@ -22,8 +23,7 @@ service cloud.firestore {
     // 1. BHAJANS COLLECTION
     // Permissive read and write for the prototype/seeding phase
     match /bhajans/{bhajanId} {
-      allow read: if true;
-      allow write: if true; 
+      allow read, write: if true; 
     }
     
     // 2. OTHER CONTENT COLLECTIONS
