@@ -4,8 +4,8 @@ rules_version = '2';
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * Deployment Fingerprint: BHAJAN_FORCE_REFRESH_V1005
- * Security Context Refresh: 2024-03-21T11:00:00Z
+ * Deployment Fingerprint: BHAJAN_FORCE_REFRESH_V1006
+ * Security Context Refresh: 2024-03-21T12:00:00Z
  * 
  * This configuration allows public reads and writes to the bhajans collection 
  * to facilitate the seeding process and prototype exploration.
