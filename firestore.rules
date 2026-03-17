@@ -4,7 +4,7 @@ rules_version = '2';
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
  * 
- * Deployment Fingerprint: REFRESH_CONTEXT_AUTH_V102
+ * Deployment Fingerprint: BHAJAN_EXPLICIT_READ_V105
  */
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -13,30 +13,30 @@ service cloud.firestore {
     function isUserAdmin() {
       return request.auth != null && (
         exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid)) ||
-        request.auth.token.email == "admin@bhajansangam.com" ||
-        request.auth.token.firebase.sign_in_provider == 'anonymous' // Allow anonymous for prototype dashboard
+        request.auth.token.email == "admin@bhajansangam.com"
       );
     }
 
     // 1. BHAJANS COLLECTION
     match /bhajans/{bhajanId} {
-      allow read: if true;
-      allow write: if true; // Fully open for prototype seeding
+      allow get: if true;
+      allow list: if true;
+      allow write: if true; // Open for seeding; restrict to isUserAdmin() for production
     }
     
     // 2. OTHER CONTENT COLLECTIONS
     match /artists/{artistId} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if request.auth != null;
     }
     
     match /languages/{languageId} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if request.auth != null;
     }
     
     match /themes/{themeId} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if request.auth != null;
     }
 
@@ -57,7 +57,7 @@ service cloud.firestore {
 
     // Global fallback
     match /{document=**} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if request.auth != null;
     }
   }

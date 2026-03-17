@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Music4, Lock, Mail, AlertCircle, Sparkles } from "lucide-react";
+import { Music4, Lock, Mail, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/firebase";
-import { signInWithEmailAndPassword, signInAnonymously } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -32,19 +32,7 @@ export default function AdminLoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/admin/dashboard");
     } catch (err: any) {
-      setError(err.message || "Invalid credentials. For prototype, use 'Sign in Anonymously'.");
-      setLoading(false);
-    }
-  };
-
-  const handleAnonymousLogin = async () => {
-    if (!auth) return;
-    setLoading(true);
-    try {
-      await signInAnonymously(auth);
-      router.push("/admin/dashboard");
-    } catch (err: any) {
-      setError("Anonymous login failed. Check your Firebase console settings.");
+      setError("Invalid credentials. Please ensure you have registered an account first at the public registration page.");
       setLoading(false);
     }
   };
@@ -70,25 +58,6 @@ export default function AdminLoginPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          <Button 
-            onClick={handleAnonymousLogin} 
-            variant="outline" 
-            className="w-full h-12 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold gap-2"
-            disabled={loading}
-          >
-            <Sparkles className="h-4 w-4" />
-            Sign in Anonymously (Demo Access)
-          </Button>
-
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground font-bold">Or use credentials</span>
-            </div>
-          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -129,9 +98,12 @@ export default function AdminLoginPage() {
           </form>
         </CardContent>
         <CardFooter className="pt-4 flex flex-col gap-4">
-          <div className="text-center space-y-2">
-            <p className="text-xs text-muted-foreground">
-              Unauthorized access is strictly prohibited.
+          <div className="text-center space-y-2 w-full">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account? <Link href="/register" className="text-primary font-bold hover:underline">Register here</Link>
+            </p>
+            <p className="text-xs text-muted-foreground mt-4">
+              Authorized access only.
             </p>
           </div>
         </CardFooter>
