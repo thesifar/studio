@@ -2,20 +2,21 @@ rules_version = '2';
 
 /**
  * BHAJAN SANGAM - FIRESTORE SECURITY RULES
- * REFRESH V8 - RESOLVING LIST PERMISSIONS
+ * FORCED PROPAGATION REFRESH
  * 
- * Deployment Refresh Token: 2024-03-21T11:45:00Z
+ * Deployment Trigger: 2024-03-21T12:15:00Z
  */
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Global Admin Check
+    // Helper: Check if user is an admin
     function isUserAdmin() {
       return request.auth != null && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
     // 1. PUBLIC CONTENT COLLECTIONS
-    // Using 'read' shorthand to explicitly permit both 'get' and 'list' operations for all users.
+    // These collections allow unauthenticated and authenticated public read access.
+    // 'read' covers both 'get' (single doc) and 'list' (collection queries).
     
     match /bhajans/{bhajanId} {
       allow read: if true;
