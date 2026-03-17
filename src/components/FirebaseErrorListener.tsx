@@ -6,14 +6,15 @@ import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
  * Listens for globally emitted 'permission-error' events.
- * Logs them to console for the LLM to see, but avoids crashing the UI.
+ * Throws them as uncaught exceptions to trigger the development overlay
+ * with full security rule context for debugging.
  */
 export function FirebaseErrorListener() {
   const [error, setError] = useState<FirestorePermissionError | null>(null);
 
   useEffect(() => {
     const handleError = (error: FirestorePermissionError) => {
-      console.error('Firebase Permission Denied Context:', error.message);
+      // Setting the error in state to trigger a re-render and throw
       setError(error);
     };
 
@@ -23,7 +24,11 @@ export function FirebaseErrorListener() {
     };
   }, []);
 
-  // We log the error but render nothing. 
-  // In a production app, you might show a small toast here.
+  // Throwing during render ensures the error is caught by Next.js error boundaries
+  // and surfaced correctly in the UI for the agentive debugging loop.
+  if (error) {
+    throw error;
+  }
+
   return null;
 }
