@@ -32,7 +32,7 @@ export default function AdminSubmissionsPage() {
     );
   }, [db]);
 
-  const { data: submissions, loading } = useCollection(submissionsQuery);
+  const { data: submissions, isLoading } = useCollection(submissionsQuery);
 
   const handleApprove = async (id: string) => {
     if (!db) return;
@@ -85,7 +85,7 @@ export default function AdminSubmissionsPage() {
             <h1 className="font-headline text-2xl font-bold">User Submissions</h1>
           </div>
           <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 px-3 py-1">
-            {loading ? "..." : (submissions?.length || 0)} Pending
+            {isLoading ? "..." : (submissions?.length || 0)} Pending
           </Badge>
         </header>
 
@@ -103,7 +103,7 @@ export default function AdminSubmissionsPage() {
           </div>
 
           <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-            {loading ? (
+            {isLoading ? (
               <div className="h-64 flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>

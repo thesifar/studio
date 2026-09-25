@@ -22,7 +22,7 @@ import {
 export function Navigation() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, loading: userLoading } = useUser();
+  const { user } = useUser();
   const auth = useAuth();
   
   useEffect(() => {
