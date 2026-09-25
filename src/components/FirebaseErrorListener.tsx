@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { toast } from '@/hooks/use-toast';
 
 /**
- * Listens for globally emitted 'permission-error' events.
- * Throws them as uncaught exceptions to trigger the development overlay
- * with full security rule context for debugging.
+ * Reports permission failures without taking down the entire application.
+ * Individual data hooks keep the underlying error available to their caller.
  */
 export function FirebaseErrorListener() {
-  const [error, setError] = useState<FirestorePermissionError | null>(null);
-
   useEffect(() => {
-    const handleError = (error: FirestorePermissionError) => {
-      // Setting the error in state to trigger a re-render and throw
-      setError(error);
+    const handleError = () => {
+      toast({
+        title: 'Unable to access this content',
+        description: 'Please sign in or try again in a moment.',
+        variant: 'destructive',
+      });
     };
 
     errorEmitter.on('permission-error', handleError);
@@ -23,12 +23,6 @@ export function FirebaseErrorListener() {
       errorEmitter.off('permission-error', handleError);
     };
   }, []);
-
-  // Throwing during render ensures the error is caught by Next.js error boundaries
-  // and surfaced correctly in the UI for the agentive debugging loop.
-  if (error) {
-    throw error;
-  }
 
   return null;
 }
